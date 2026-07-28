@@ -12,6 +12,7 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+/* Remove comment if needed
 uint64_t tick() {
 	 auto now = std::chrono::system_clock::now();
 
@@ -32,6 +33,7 @@ uint64_t tick() {
 
 	return ticks;
 }
+*/
 
 void Gui::SetupMenu(ID3D11Device* device, ID3D11DeviceContext* context) {
 
