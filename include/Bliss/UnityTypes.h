@@ -42,14 +42,19 @@ protected:
     }
 
     template <typename T>
-    T* CallMethod(const char* MethodName, void** params=nullptr){
+    T* CallStaticMethod(const char* MethodName, void** params=nullptr, void* inst=nullptr){
         if(!members) return nullptr;
         auto it = members->find(MethodName);
         if(it == members->end()) return nullptr;
         Il2CppMemberInfo member = it->second;
         if(member.type != Il2CppMemberInfo::Type::METHOD) return nullptr;
 
-        void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.methodPtr, self, params, nullptr);
+        void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.methodPtr, inst, params, nullptr);
         return reinterpret_cast<T*>(result);
+    }
+
+    template <typename T>
+    T* CallMethod(const char* MethodName, void** params=nullptr){
+        return CallStaticMethod<T>(MethodName, params, self);
     }
 };

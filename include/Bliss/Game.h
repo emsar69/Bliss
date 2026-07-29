@@ -17,6 +17,14 @@ struct Color4 {
     float r, g, b, a;
 };
 
+struct Vec3 {
+    float x,y,z;
+};
+
+struct Vec2 {
+    float x,y;
+};
+
 struct PlayerPhysics : Il2CppObject {
     PlayerPhysics(void* self) : Il2CppObject(self, &Offsets::PlayerPhysicsMembers) {};
 
@@ -77,6 +85,10 @@ struct CosmeticsLayer : Il2CppObject {
 struct PlayerControl : Il2CppObject {
     PlayerControl(void* self) : Il2CppObject(self, &Offsets::PlayerControlMembers) {};
 
+    Vec2* GetPosition() {
+        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(CallMethod<uintptr_t>("GetTruePosition")) + 0x10);
+    }
+
     float* GetKillTimer(){
         return GetField<float>("killTimer");
     }
@@ -125,6 +137,22 @@ struct PlayerControl : Il2CppObject {
         //TODO: Crashes for no reason literally works on cheat engine.
         //TODO: Add crash handler at runtime invoker
         CallMethod<void>("SetColor", params);
+    }
+};
+
+struct Camera : Il2CppObject {
+    Camera() : Il2CppObject(nullptr, &Offsets::CameraMembers) {UpdateSelf();}; // HOWEVER: self isn't fixed here.
+
+    void UpdateSelf(){
+        self = CallStaticMethod<void>("get_main");
+    }
+
+    Vec2* WorldToScreen(Vec3 vec3) {
+        void* params[1];
+        params[0] = &vec3;
+
+        //adding 0x10 cuz it starts from 0x10.
+        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(CallMethod<uintptr_t>("WorldToScreenPoint_dup_1", params)) + 0x10); //Camera.WorldToScreenPoint_dup_1()
     }
 };
 

@@ -14,6 +14,7 @@ namespace Offsets {
     inline MemberMap InnerNetMembers;
     inline MemberMap WriterMembers;
     inline MemberMap RoleManager;
+    inline MemberMap CameraMembers;
 
     void Init();
 }

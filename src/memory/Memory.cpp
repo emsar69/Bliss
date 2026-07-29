@@ -14,6 +14,7 @@ void Memory::Init(){
     Assembles = il2cpp_Functions::il2cpp_domain_get_assemblies(Domain, &Assemble_Count);
     CSharpAssemble = GetAssembleByName("Assembly-CSharp.dll");
     Hazel = GetAssembleByName("Hazel.dll");
+    UnityEngine_CoreModule = GetAssembleByName("UnityEngine.CoreModule.dll");
 
     Offsets::Init();
 }
