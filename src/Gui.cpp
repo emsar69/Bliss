@@ -163,6 +163,22 @@ void Gui::Render(){
 		float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
 		ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
 
+		static const char* anims[] = {
+			"Shields",
+			"Astroids",
+			"Trash"
+		};
+		static const AnimType anim_values[] = {
+			AnimType::SHIELDS,
+			AnimType::METEOR,
+			AnimType::TRASH
+		};
+		static int anim_index = 0;
+		ImGui::Combo("Animations", &anim_index, anims, IM_ARRAYSIZE(anims));
+		if(ImGui::Button("Play animation")) {
+			Game::g_LocalPlayer.RpcPlayAnimation(anim_values[anim_index]);
+		}
+
 		PlayerData data = Game::g_LocalPlayer.GetNetworkedData();
 
 		CosmeticsLayer cosmetics = Game::g_LocalPlayer.GetCosmetics();

@@ -7,6 +7,12 @@
 #include <Bliss/il2cpp_Functions.h>
 #include <Bliss/UnityTypes.h>
 
+enum AnimType : byte {
+    SHIELDS = 1,
+    METEOR = 6,
+    TRASH = 10 // 10 in mirahq 9 in the skeld. somehow both works in both map
+};
+
 struct Color4 {
     float r, g, b, a;
 };
@@ -100,6 +106,12 @@ struct PlayerControl : Il2CppObject {
     PlayerData GetNetworkedData(){
         void* addr = CallMethod<void>("get_Data");
         return PlayerData(addr);
+    }
+
+    void RpcPlayAnimation(AnimType anim) {
+        void* params[1];
+        params[0] = &anim;
+        CallMethod<void>("RpcPlayAnimation", params);
     }
 
     void RpcSetName(void* str) {
