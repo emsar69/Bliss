@@ -165,7 +165,7 @@ void Gui::Render(){
 
 		static const char* anims[] = {
 			"Shields",
-			"Astroids",
+			"Asteroids",
 			"Trash"
 		};
 		static const AnimType anim_values[] = {
