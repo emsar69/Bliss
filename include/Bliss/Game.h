@@ -83,6 +83,10 @@ struct PlayerControl : Il2CppObject {
         return *GetField<uint32_t>("NetId");
     }
 
+    float* MaxReportDistance() { // Pointer so there's no need for "SetMaxReportDistance" method.
+        return GetField<float>("MaxReportDistance");
+    }
+
     CosmeticsLayer GetCosmetics() {
         void* addr = *GetField<void*>("cosmetics");
         return CosmeticsLayer(addr);

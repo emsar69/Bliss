@@ -160,6 +160,9 @@ void Gui::Render(){
 		float* kill = Game::g_LocalPlayer.GetKillTimer();
 		ImGui::Text("Cooldown: %.1f", *kill);
 
+		float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
+		ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
+
 		PlayerData data = Game::g_LocalPlayer.GetNetworkedData();
 
 		CosmeticsLayer cosmetics = Game::g_LocalPlayer.GetCosmetics();
