@@ -1,7 +1,3 @@
-// Copyright (C) 2026 emsar69
-// SPDX-License-Identifier: GPL-3.0-or-later
-// See the LICENSE file for the full license text.
-
 #include <Windows.h>
 #include <thread>
 #include <exception>

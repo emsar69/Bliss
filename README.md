@@ -99,7 +99,4 @@ This modular design makes the framework easy to extend and maintain.
 ---
 
 ## License
-Copyright (C) 2026 emsar69
-SPDX-License-Identifier: GPL-3.0-or-later
-
-See the [LICENSE](LICENSE) file for the full license text.
+[GPL-3.0](LICENSE)
