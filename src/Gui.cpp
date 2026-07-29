@@ -160,6 +160,22 @@ void Gui::Render(){
 		float* kill = Game::g_LocalPlayer.GetKillTimer();
 		ImGui::Text("Cooldown: %.1f", *kill);
 
+		static const char* anims[] = {
+			"Shields",
+			"Astroids",
+			"Trash"
+		};
+		static const AnimType anim_values[] = {
+			AnimType::SHIELDS,
+			AnimType::METEOR,
+			AnimType::TRASH
+		};
+		static int anim_index = 0;
+		ImGui::Combo("Animations", &anim_index, anims, IM_ARRAYSIZE(anims));
+		if(ImGui::Button("Play animation")) {
+			Game::g_LocalPlayer.RpcPlayAnimation(anim_values[anim_index]);
+		}
+
 		PlayerData data = Game::g_LocalPlayer.GetNetworkedData();
 
 		CosmeticsLayer cosmetics = Game::g_LocalPlayer.GetCosmetics();
