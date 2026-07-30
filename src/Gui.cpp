@@ -153,14 +153,13 @@ void HandleFeatures(){
 		// GetIsGameOver, Player.Canmove
 		if(Game::g_PlayerList && Game::g_LocalPlayer){
 			Vec2* _ = Game::g_LocalPlayer.GetPosition();
-			if(!_) return; 
+			if(!_) return;
 			Vec2 mypos = *_;
 			Vec3 mypos3 = {mypos.x, mypos.y, 0};
 			Vec2* __ = cam.WorldToScreen(mypos3);
 			if(!__) return;
 			Vec2 mypos_to_screen = *__;
 			mypos_to_screen.y = io.DisplaySize.y - mypos_to_screen.y;
-
 
 			for(int i = 0; i < Game::g_PlayerList.size(); i++){
 				PlayerControl player = Game::g_PlayerList[i];
@@ -333,7 +332,13 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	if (GetAsyncKeyState(VK_DELETE) & 1)
 		Gui::open = !Gui::open;
 
-	if (Gui::open && ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) return 1L;
+	if(Gui::open) {
+		ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam);
+		ImGuiIO& io = ImGui::GetIO();
+
+		if (io.WantCaptureMouse && (msg >= WM_MOUSEFIRST && msg <= WM_MOUSELAST)) return 0;
+		if (io.WantCaptureKeyboard && (msg >= WM_KEYFIRST && msg <= WM_KEYLAST)) return 0;
+	}
 
 	return CallWindowProc(Gui::originalWindowProcess, hWnd, msg, wParam, lParam);
 }
