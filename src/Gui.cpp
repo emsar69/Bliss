@@ -186,7 +186,7 @@ void HandleFeatures(){
 
 				ImU32 col = isBad ? IM_COL32(255, 0, 0, 255) : IM_COL32(0, 255, 255, 255);
 
-				draw_list->AddRect({screen.x-50, screen.y-300}, {screen.x+50, screen.y}, col, 0.0f, 0, 4.0f);
+				draw_list->AddRect({screen.x-50, screen.y-100}, {screen.x+50, screen.y}, col, 0.0f, 0, 4.0f);
 				draw_list->AddLine({mypos_to_screen.x, mypos_to_screen.y}, {screen.x, screen.y}, col, 2.0f);
 			}
 		}
