@@ -143,7 +143,7 @@ void HandleFeatures(){
 
 	if(Esp) {
 		Camera cam;
-		cam.UpdateSelf();
+		//cam.UpdateSelf(); Just noticed that's not needed since I do Update in constructor.
 
 		ImDrawList* draw_list = ImGui::GetBackgroundDrawList();
 
