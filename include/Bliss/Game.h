@@ -146,11 +146,55 @@ struct PlayerControl : Il2CppObject {
     }
 };
 
+struct Behaviour : Il2CppObject {
+    Behaviour(void* self) : Il2CppObject(self, &Offsets::UnityEngineBehaviourMembers) {};
+
+    void SetEnabled(bool enabled) {
+        void* params[1];
+        params[0] = &enabled;
+
+        CallMethod<void>("set_enabled", params);
+    }
+};
+
+struct GameObject : Il2CppObject {
+    GameObject(void* self) : Il2CppObject(self, &Offsets::GameObjectMembers) {};
+
+    void SetActive(bool active) {
+        void* params[1];
+        params[0] = &active;
+
+        CallMethod<void>("set_active", params);
+    }
+};
+
+struct Transform : Il2CppObject {
+    Transform(void* self) : Il2CppObject(self, &Offsets::TransformMembers) {};
+
+    Transform GetChild(int n) {
+        void* params[1];
+        params[0] = &n;
+
+        void* addr = CallMethod<void>("GetChild", params);
+        return Transform(addr);
+    }
+
+    GameObject GetGameObject() {
+        void* addr = CallMethod<void>("get_gameObject");
+        return GameObject(addr);
+    }
+};
+
 struct Camera : Il2CppObject {
     Camera() : Il2CppObject(nullptr, &Offsets::CameraMembers) {UpdateSelf();}; // HOWEVER: self isn't fixed here.
 
     void UpdateSelf(){
         self = CallStaticMethod<void>("get_main");
+    }
+
+    Transform GetTransform() {
+        void* addr = CallMethod<void>("get_transform");
+        return Transform(addr);
     }
 
     Vec2* WorldToScreen(Vec3 vec3) {

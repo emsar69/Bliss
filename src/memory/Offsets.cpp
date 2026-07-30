@@ -72,6 +72,9 @@ void Offsets::Init() {
     FindMembers("MessageWriter", WriterMembers, "Hazel", Memory::Hazel);
     FindMembers("RoleManager", RoleManager);
     FindMembers("Camera", CameraMembers, "UnityEngine", Memory::UnityEngine_CoreModule);
+    FindMembers("Transform", TransformMembers, "UnityEngine", Memory::UnityEngine_CoreModule);
+    FindMembers("GameObject", GameObjectMembers, "UnityEngine", Memory::UnityEngine_CoreModule);
+    FindMembers("Behaviour", UnityEngineBehaviourMembers, "UnityEngine", Memory::UnityEngine_CoreModule); // That's for not typing unnecessary classes over and over again.
 
     void* addr = WriterMembers["Write.String"].methodPtr;
     MEMORY_BASIC_INFORMATION mbi;

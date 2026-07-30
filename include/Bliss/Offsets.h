@@ -15,6 +15,9 @@ namespace Offsets {
     inline MemberMap WriterMembers;
     inline MemberMap RoleManager;
     inline MemberMap CameraMembers;
+    inline MemberMap TransformMembers;
+    inline MemberMap GameObjectMembers;
+    inline MemberMap UnityEngineBehaviourMembers;
 
     void Init();
 }

@@ -25,6 +25,13 @@ struct Il2CppObject {
 
     Il2CppObject(void* inst, MemberMap* members) : self(inst), members(members) {};
 
+    void* GetComponent(void* type) {
+        void* params[1];
+        params[0] = type;
+
+        return CallMethod<void>("GetComponent", params);
+    }
+
     explicit operator bool() noexcept {
         void** ptr = GetField<void*>("m_CachedPtr");
         return self != nullptr && *ptr != nullptr;
@@ -46,9 +53,15 @@ protected:
     T* CallStaticMethod(const char* MethodName, void** params=nullptr, void* inst=nullptr){
         if(!members) return nullptr;
         auto it = members->find(MethodName);
-        if(it == members->end()) return nullptr;
+        if(it == members->end()) {
+            printf("Attempted to access invalid method name: %s\n", MethodName);
+            return nullptr;
+        }
         Il2CppMemberInfo member = it->second;
-        if(member.type != Il2CppMemberInfo::Type::METHOD) return nullptr;
+        if(member.type != Il2CppMemberInfo::Type::METHOD) {
+            printf("%s is NOT a method.\n", MethodName);
+            return nullptr;
+        }
 
         void* exp = nullptr;
         void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.methodPtr, inst, params, &exp);

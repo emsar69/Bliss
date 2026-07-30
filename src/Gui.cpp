@@ -133,6 +133,29 @@ bool ShowImposters = false;
 bool Esp = false;
 char NameToSet[64] = {};
 
+bool SetNoclip(bool active) {
+	if(!Game::g_LocalPlayer) return false;
+	void* ADDR_CC2D = Game::g_LocalPlayer.GetComponent(Types::CircleCollider2D);
+	Behaviour CC2D(ADDR_CC2D);
+	printf("CC2D: %p\n", ADDR_CC2D);
+	if(!CC2D) return false;
+	CC2D.SetEnabled(!active); // Disables/Enables CircleCollider2D inside of the character.
+
+	return true;
+}
+
+bool SetShadows(bool active) {
+	Camera cam;
+	Transform shadows = cam.GetTransform().GetChild(3);
+	if(!shadows) return false;
+	
+	GameObject shadows_gameobject = shadows.GetGameObject();
+	if(!shadows_gameobject) return false;
+	
+	shadows_gameobject.SetActive(active);
+	return true;
+}
+
 void HandleFeatures(){
 	Game::UpdateGlobals();
 
@@ -301,6 +324,16 @@ void Gui::Render(){
 		ImGui::Checkbox("No Kill Cooldown", &noCooldown);
 		ImGui::Checkbox("Label Impostors", &ShowImposters); // didn't implement yet.
 		ImGui::Checkbox("Esp", &Esp);
+
+		ImGui::Separator();
+
+		if(ImGui::Button("Enable Shadows")) SetShadows(true);
+		if(ImGui::Button("Disable Shadows")) SetShadows(false);
+
+		ImGui::Separator();
+
+		if(ImGui::Button("Enable Noclip")) SetNoclip(true);
+		if(ImGui::Button("Disable Noclip")) SetNoclip(false);
 
 		if(Game::g_PlayerList){
 			for(int i = 0; i < Game::g_PlayerList.size(); i++){

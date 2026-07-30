@@ -15,6 +15,11 @@ void Memory::Init(){
     CSharpAssemble = GetAssembleByName("Assembly-CSharp.dll");
     Hazel = GetAssembleByName("Hazel.dll");
     UnityEngine_CoreModule = GetAssembleByName("UnityEngine.CoreModule.dll");
+    UnityEngine_Physics2DModule = GetAssembleByName("UnityEngine.Physics2DModule.dll");
+
+    void* cc2_klas = il2cpp_Functions::il2cpp_class_from_name(Memory::UnityEngine_Physics2DModule, "UnityEngine", "CircleCollider2D");
+    void* klas_type = il2cpp_Functions::il2cpp_class_get_type(cc2_klas);
+    Types::CircleCollider2D = il2cpp_Functions::il2cpp_type_get_object(klas_type);
 
     Offsets::Init();
 }
