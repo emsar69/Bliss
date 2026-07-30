@@ -1,6 +1,7 @@
 #include <Bliss/Hooks.h>
 #include <Bliss/Devices.h>
 #include <Bliss/Gui.h>
+#include <Bliss/Memory.h>
 #include <Bliss/Offsets.h>
 
 #include <stdexcept>
@@ -45,6 +46,9 @@ void Hooks::Destroy() {
 	MH_DisableHook(MH_ALL_HOOKS);
 	MH_RemoveHook(MH_ALL_HOOKS);
 	MH_Uninitialize();
+
+	// Commented out bcuz it won't work (Different threads)
+	// il2cpp_Functions::il2cpp_thread_detach(Memory::il2cpp_thread);
 }
 
 HRESULT __stdcall Hooks::PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) noexcept {
@@ -56,6 +60,8 @@ HRESULT __stdcall Hooks::PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterv
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 		Devices::g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &Devices::g_mainTargetView);
 		pBackBuffer->Release();
+
+		Memory::il2cpp_thread = il2cpp_Functions::il2cpp_thread_attach(Memory::Domain);
 
 		Gui::SetupMenu(Devices::g_pd3dDevice, Devices::g_pd3dContext);
 	}

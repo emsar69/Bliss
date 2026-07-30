@@ -85,8 +85,14 @@ struct CosmeticsLayer : Il2CppObject {
 struct PlayerControl : Il2CppObject {
     PlayerControl(void* self) : Il2CppObject(self, &Offsets::PlayerControlMembers) {};
 
+    bool* GetEnabled() {
+        return CallMethod<bool>("get_enabled");
+    }
+
     Vec2* GetPosition() {
-        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(CallMethod<uintptr_t>("GetTruePosition")) + 0x10);
+        uintptr_t* ret = CallMethod<uintptr_t>("GetTruePosition");
+        if(!ret) return nullptr;
+        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(ret) + 0x10);
     }
 
     float* GetKillTimer(){
@@ -151,8 +157,11 @@ struct Camera : Il2CppObject {
         void* params[1];
         params[0] = &vec3;
 
+        uintptr_t* ret = CallMethod<uintptr_t>("WorldToScreenPoint_dup_1", params);
+        if(!ret) return nullptr;
+
         //adding 0x10 cuz it starts from 0x10.
-        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(CallMethod<uintptr_t>("WorldToScreenPoint_dup_1", params)) + 0x10); //Camera.WorldToScreenPoint_dup_1()
+        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(ret) + 0x10); //Camera.WorldToScreenPoint_dup_1()
     }
 };
 
@@ -180,6 +189,14 @@ struct AmongUsClient : Il2CppObject {
 
     int32_t GameId() {
         return *GetField<int32_t>("GameId");
+    }
+    
+    int32_t GameState() {
+        return *GetField<int32_t>("GameState");
+    }
+
+    bool isConnecting() {
+        return *GetField<bool>("isConnecting");
     }
 
     HazelWriter StartRpcImmediately(int32_t targetNetId, byte callId, byte isReliable, int32_t targetClientId) {
@@ -227,7 +244,7 @@ public:
     void Update(void* ListAddr){
         char* charAddr = reinterpret_cast<char*>(ListAddr);
         char* items = *reinterpret_cast<char**>(charAddr+0x10);
-        count = *reinterpret_cast<size_t*>(charAddr+0x18);
+        count = *reinterpret_cast<int*>(charAddr+0x18);
         data = reinterpret_cast<T**>(items + 0x20);
     }
 

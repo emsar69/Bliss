@@ -15,8 +15,8 @@ void Entry(HMODULE module) {
     freopen("CONOUT$", "w", stdout);
     try{
         Devices::Init();
-        Hooks::Setup();
         Memory::Init();
+        Hooks::Setup();
     }catch(const std::exception& e){
         goto UNLOAD;
     }

@@ -149,39 +149,46 @@ void HandleFeatures(){
 
 		ImGuiIO& io = ImGui::GetIO();
 
+		// GameState == 0 ? in menu
+		// GetIsGameOver, Player.Canmove
 		if(Game::g_PlayerList && Game::g_LocalPlayer){
-			Vec2* __ = Game::g_LocalPlayer.GetPosition();
-			if(__ != nullptr) {
-				Vec2 mypos = *__;
-				Vec3 mypos3 = {mypos.x, mypos.y, 0};
-				Vec2* _ = cam.WorldToScreen(mypos3);
-				if(_ == nullptr) return;
-				Vec2 mypos_to_screen = *_;
-				mypos_to_screen.y = io.DisplaySize.y - mypos_to_screen.y;
+			Vec2* _ = Game::g_LocalPlayer.GetPosition();
+			if(!_) return; 
+			Vec2 mypos = *_;
+			Vec3 mypos3 = {mypos.x, mypos.y, 0};
+			Vec2* __ = cam.WorldToScreen(mypos3);
+			if(!__) return;
+			Vec2 mypos_to_screen = *__;
+			mypos_to_screen.y = io.DisplaySize.y - mypos_to_screen.y;
 
-				for(int i = 0; i < Game::g_PlayerList.size(); i++){
-					PlayerControl player = Game::g_PlayerList[i];
-					if(!player) break;
 
-					//TODO: Functions such as getposition and worldtoscreen allocate memory: 0x100 0x200 0x300 and so on.
-					// Which results in gc crash (garbage collector)
-					Vec2 pos = *player.GetPosition();
-					Vec3 cords = {pos.x, pos.y, 0};
-					Vec2 screen = *cam.WorldToScreen(cords);
-					screen.y = io.DisplaySize.y - screen.y;
+			for(int i = 0; i < Game::g_PlayerList.size(); i++){
+				PlayerControl player = Game::g_PlayerList[i];
+				if(!player) break;
 
-					PlayerData playerData = player.GetNetworkedData();
-					if(!playerData) break;
+				Vec2* ___ = player.GetPosition();
+				if(!___) break;
+				Vec2 pos = *___;
+				Vec3 cords = {pos.x, pos.y, 0};
 
-					Role role = playerData.GetRole();
-					if(!role) break;
-					bool isBad = *role.GetTeamType();
+				Vec2* ____ = cam.WorldToScreen(cords);
+				if(!____) break;
+				Vec2 screen = *____;
+				screen.y = io.DisplaySize.y - screen.y;
 
-					ImU32 col = isBad ? IM_COL32(255, 0, 0, 255) : IM_COL32(0, 255, 255, 255);
+				PlayerData playerData = player.GetNetworkedData();
+				if(!playerData) break;
 
-					draw_list->AddRect({screen.x-50, screen.y-300}, {screen.x+50, screen.y}, col, 0.0f, 0, 4.0f);
-					draw_list->AddLine({mypos_to_screen.x, mypos_to_screen.y}, {screen.x, screen.y}, col, 2.0f);
-				}
+				Role role = playerData.GetRole();
+				if(!role) break;
+				int* _____ = role.GetTeamType();
+				if(!_____) break;
+				bool isBad = *_____;
+
+				ImU32 col = isBad ? IM_COL32(255, 0, 0, 255) : IM_COL32(0, 255, 255, 255);
+
+				draw_list->AddRect({screen.x-50, screen.y-300}, {screen.x+50, screen.y}, col, 0.0f, 0, 4.0f);
+				draw_list->AddLine({mypos_to_screen.x, mypos_to_screen.y}, {screen.x, screen.y}, col, 2.0f);
 			}
 		}
 	}
@@ -302,13 +309,13 @@ void Gui::Render(){
 				if(!player) break;
 
 				PlayerData playerData = player.GetNetworkedData();
-				if(!playerData) break;
+				if(!playerData) continue;
 
 				ImGui::Separator();
 				ImGui::Text("Name: %ls", playerData.GetPlayerName());
 
 				Role role = playerData.GetRole();
-				if(!role) break;
+				if(!role) continue;
 				bool isBad = *role.GetTeamType();
 				ImGui::TextColored(ImVec4(isBad, !isBad, !isBad, 1), "Team: %d", isBad);
 			}

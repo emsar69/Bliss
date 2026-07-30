@@ -5,6 +5,7 @@
 
 namespace Memory {
     inline HMODULE GameAssembly = NULL;
+    inline void* il2cpp_thread = nullptr; // initialized by presenthook.
     inline void* Domain = nullptr;
     inline void* Assembles = nullptr;
     inline void* CSharpAssemble = nullptr;

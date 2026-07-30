@@ -22,5 +22,7 @@ void il2cpp_Functions::SetupFunctions(HMODULE addr){
     Resv(addr, il2cpp_method_get_param);
     Resv(addr, il2cpp_runtime_invoke);
     Resv(addr, il2cpp_string_new);
+    Resv(addr, il2cpp_thread_attach);
+    Resv(addr, il2cpp_thread_detach);
     Resv(addr, il2cpp_type_get_name);
 }

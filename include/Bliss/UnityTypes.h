@@ -26,7 +26,8 @@ struct Il2CppObject {
     Il2CppObject(void* inst, MemberMap* members) : self(inst), members(members) {};
 
     explicit operator bool() noexcept {
-        return self != nullptr;
+        void** ptr = GetField<void*>("m_CachedPtr");
+        return self != nullptr && *ptr != nullptr;
     }
 
 protected:
@@ -49,12 +50,23 @@ protected:
         Il2CppMemberInfo member = it->second;
         if(member.type != Il2CppMemberInfo::Type::METHOD) return nullptr;
 
-        void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.methodPtr, inst, params, nullptr);
+        void* exp = nullptr;
+        void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.methodPtr, inst, params, &exp);
+
+        if(exp) {
+            printf("EXCEPTION IN CALL METHOD!!!!\n\nMETHOD NAME: %s\nINSTANCE: %p\n", MethodName, inst);
+            return nullptr;
+        }
+
         return reinterpret_cast<T*>(result);
     }
 
     template <typename T>
     T* CallMethod(const char* MethodName, void** params=nullptr){
+        if(self == nullptr) {
+            printf("Tried to call instance method where instance is NOT DEFINED PROPERLY.\n\nMethod Name: %s\n", MethodName);
+            return nullptr;
+        }
         return CallStaticMethod<T>(MethodName, params, self);
     }
 };

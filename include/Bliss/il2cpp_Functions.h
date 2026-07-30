@@ -20,6 +20,8 @@ using il2cpp_method_get_param_count_t = size_t(__fastcall*)(void*);
 using il2cpp_method_get_param_t = void*(__fastcall*)(void*, int);
 using il2cpp_runtime_invoke_t = void*(__fastcall*)(void*, void*, void**, void**);
 using il2cpp_string_new_t = void*(__fastcall*)(const char*);
+using il2cpp_thread_attach_t = void*(__fastcall*)(void*);
+using il2cpp_thread_detach_t = void*(__fastcall*)(void*);
 using il2cpp_type_get_name_t = const char*(__fastcall*)(void*);
 
 namespace il2cpp_Functions {
@@ -41,6 +43,8 @@ namespace il2cpp_Functions {
     inline il2cpp_method_get_param_t il2cpp_method_get_param;
     inline il2cpp_runtime_invoke_t il2cpp_runtime_invoke;
     inline il2cpp_string_new_t il2cpp_string_new;
+    inline il2cpp_thread_attach_t il2cpp_thread_attach;
+    inline il2cpp_thread_detach_t il2cpp_thread_detach;
     inline il2cpp_type_get_name_t il2cpp_type_get_name;
 
     void SetupFunctions(HMODULE il2cpp_addr);
