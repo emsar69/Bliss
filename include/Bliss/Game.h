@@ -25,6 +25,56 @@ struct Vec2 {
     float x,y;
 };
 
+template <typename T, typename = std::enable_if<std::is_base_of<Il2CppObject, T>::value>::type>
+class ListWrapper {
+private:
+    T** data = nullptr;
+    size_t count = 0;
+
+public:
+    ListWrapper() = default;
+    ListWrapper(void* ListAddr) { Update(ListAddr); }
+
+    void Update(void* ListAddr){
+        char* charAddr = reinterpret_cast<char*>(ListAddr);
+        char* items = *reinterpret_cast<char**>(charAddr+0x10);
+        count = *reinterpret_cast<int*>(charAddr+0x18);
+        data = reinterpret_cast<T**>(items + 0x20);
+    }
+
+    T operator[](size_t index) {
+        return T(data[index]);
+    }
+    size_t size() const { return count; }
+
+    explicit operator bool() noexcept {
+        return data != nullptr;
+    }
+
+    class Iterator {
+    private:
+        T** ptr;
+
+    public:
+        Iterator(T** data) : ptr(data) {};
+
+        T operator*() {
+            return T(*ptr);
+        }
+        Iterator& operator++() { ++ptr; return *this; }
+
+        bool operator==(const Iterator& IT) const { return ptr == IT.ptr; }
+        bool operator!=(const Iterator& IT) const { return ptr != IT.ptr; }
+    };
+
+    Iterator begin() { return Iterator(data); }
+    Iterator end() { return Iterator(data+count); }
+};
+
+struct Empty : Il2CppObject {
+    Empty(void* self) : Il2CppObject(self, nullptr) {};
+};
+
 struct PlayerPhysics : Il2CppObject {
     PlayerPhysics(void* self) : Il2CppObject(self, &Offsets::PlayerPhysicsMembers) {};
 
@@ -87,6 +137,18 @@ struct PlayerControl : Il2CppObject {
 
     bool* GetEnabled() {
         return CallMethod<bool>("get_enabled");
+    }
+
+    void RpcCompleteTask(uint32_t index) {
+        void* params[1];
+        params[0] = &index;
+
+        CallMethod<void>("RpcCompleteTask", params);
+    }
+
+    ListWrapper<Empty> GetTasks() {
+        void* addr = *GetField<void*>("myTasks");
+        return ListWrapper<Empty>(addr);
     }
 
     Vec2* GetPosition() {
@@ -273,52 +335,6 @@ struct RoleManager : Il2CppObject {
 
         CallMethod<void>("SetRole", params);
     }
-};
-
-template <typename T, typename = std::enable_if<std::is_base_of<Il2CppObject, T>::value>::type>
-class ListWrapper {
-private:
-    T** data = nullptr;
-    size_t count = 0;
-
-public:
-    ListWrapper() = default;
-    ListWrapper(void* ListAddr) { Update(ListAddr); }
-
-    void Update(void* ListAddr){
-        char* charAddr = reinterpret_cast<char*>(ListAddr);
-        char* items = *reinterpret_cast<char**>(charAddr+0x10);
-        count = *reinterpret_cast<int*>(charAddr+0x18);
-        data = reinterpret_cast<T**>(items + 0x20);
-    }
-
-    T operator[](size_t index) {
-        return T(data[index]);
-    }
-    size_t size() const { return count; }
-
-    explicit operator bool() noexcept {
-        return data != nullptr;
-    }
-
-    class Iterator {
-    private:
-        T** ptr;
-
-    public:
-        Iterator(T** data) : ptr(data) {};
-
-        T operator*() {
-            return T(*ptr);
-        }
-        Iterator& operator++() { ++ptr; return *this; }
-
-        bool operator==(const Iterator& IT) const { return ptr == IT.ptr; }
-        bool operator!=(const Iterator& IT) const { return ptr != IT.ptr; }
-    };
-
-    Iterator begin() { return Iterator(data); }
-    Iterator end() { return Iterator(data+count); }
 };
 
 namespace Game{

@@ -156,6 +156,18 @@ bool SetShadows(bool active) {
 	return true;
 }
 
+bool CompleteAllTasks(PlayerControl& player) {
+	ListWrapper<Empty> tasks = player.GetTasks();
+	if(!tasks) return false;
+
+	int task_count = tasks.size();
+	for(int i = 0; i < task_count; i++) {
+		player.RpcCompleteTask(i);
+	}
+
+	return true;
+}
+
 void HandleFeatures(){
 	Game::UpdateGlobals();
 
@@ -334,6 +346,14 @@ void Gui::Render(){
 
 		if(ImGui::Button("Enable Noclip")) SetNoclip(true);
 		if(ImGui::Button("Disable Noclip")) SetNoclip(false);
+
+		ImGui::Separator();
+
+		if(ImGui::Button("Complete my tasks")) {
+			if(!CompleteAllTasks(Game::g_LocalPlayer)) {
+				printf("Complete All tasks returns false. No list of tasks found.\n");
+			}
+		}
 
 		if(Game::g_PlayerList){
 			for(int i = 0; i < Game::g_PlayerList.size(); i++){
