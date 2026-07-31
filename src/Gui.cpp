@@ -13,6 +13,8 @@
 
 #include <chrono>
 
+#define IM_COL32_FLOAT(f) IM_COL32(f[0]*255, f[1]*255, f[2]*255, f[3]*255)
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -132,6 +134,8 @@ bool noCooldown = false;
 bool ShowImposters = false;
 bool Esp = false;
 char NameToSet[64] = {};
+float EspCrew[4] = {0, 1, 1, 1};
+float EspImpostor[4] = {1, 0, 0, 1};
 
 bool SetNoclip(bool active) {
 	if(!Game::g_LocalPlayer) return false;
@@ -219,10 +223,21 @@ void HandleFeatures(){
 				if(!_____) break;
 				bool isBad = *_____;
 
-				ImU32 col = isBad ? IM_COL32(255, 0, 0, 255) : IM_COL32(0, 255, 255, 255);
+				ImU32 col = isBad ? IM_COL32_FLOAT(EspImpostor) : IM_COL32_FLOAT(EspCrew);
 
 				draw_list->AddRect({screen.x-50, screen.y-150}, {screen.x+50, screen.y}, col, 0.0f, 0, 4.0f);
 				draw_list->AddLine({mypos_to_screen.x, mypos_to_screen.y}, {screen.x, screen.y}, col, 2.0f);
+
+				if(isBad) {
+					// Draw kill cooldown
+					float timer = *player.GetKillTimer();
+					int G = 50+timer*10;
+					if(G > 255) G = 255;
+
+					char buf[32] = {0};
+					std::snprintf(buf, sizeof(buf), "Cooldown: %.1fs", timer);
+					draw_list->AddText(ImGui::GetFont(), 25.0f, {screen.x-50, screen.y}, IM_COL32(240, G, 34, 255), buf);
+				}
 			}
 		}
 	}
@@ -237,141 +252,162 @@ void Gui::Render(){
 
 	//ImGui::ShowStyleEditor();
 	//ImGui::ShowDemoWindow();
+	
 	if(Gui::open) {
 		ImGui::Begin("Bliss", &Gui::open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
-		ImGui::Text("testtest gay");
-		if(Game::g_LocalPlayer){
-			PlayerPhysics physics = Game::g_LocalPlayer.GetPlayerPhysics();
-			if(physics){
-				float* speed = physics.GetSpeed();
-				ImGui::SliderFloat("Speed", speed, 0, 20, "%.1f");
-			}
-
-			float* kill = Game::g_LocalPlayer.GetKillTimer();
-			ImGui::Text("Cooldown: %.1f", *kill);
-
-			float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
-			ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
-
-			static const char* anims[] = {
-				"Shields",
-				"Asteroids",
-				"Trash"
-			};
-			static const AnimType anim_values[] = {
-				AnimType::SHIELDS,
-				AnimType::METEOR,
-				AnimType::TRASH
-			};
-			static int anim_index = 0;
-			ImGui::Combo("Animations", &anim_index, anims, IM_ARRAYSIZE(anims));
-			if(ImGui::Button("Play animation")) {
-				Game::g_LocalPlayer.RpcPlayAnimation(anim_values[anim_index]);
-			}
-
-			PlayerData data = Game::g_LocalPlayer.GetNetworkedData();
-
-			CosmeticsLayer cosmetics = Game::g_LocalPlayer.GetCosmetics();
-			Color4* color = cosmetics.GetNameColor();
-			color->r = 0;
-			/*
-			TODO:
-			Reach innernetclient so write a program that graphs from root(static fields) to target.
-			StartRpcImmediately
-
-			bruh,
-			AmongUsInstance addr = InnerNetClientAddr
-
-			RCX (1st param aka. SELF) = AmongUsInstance When calling "StartRpcImmediately"
-
-			*/
-			//printf("R: %.1f, G: %.1f, B: %.1f, A: %.1f\n", color->r, color->g, color->b, color->a);
-			
-			uint32_t netid = Game::g_LocalPlayer.NetId();
-			int32_t gameid = Game::g_AmongUsClient.GameId();
-			uint8_t playerid = Game::g_LocalPlayer.PlayerId();
-
-			if(ImGui::Button("imp pls")) { //Pls work
-				//TODO: Breakpoints in setrole and before calls to see the value retrieved from stack
-				Game::g_RoleManager.SetRole(Game::g_LocalPlayer, 1); // so that's the function
-			}
-			ImGui::InputText("Name", NameToSet, IM_ARRAYSIZE(NameToSet));
-			if(ImGui::Button("Set My Name")){
-				//uint64_t ticks = tick();
-
-				void* str = il2cpp_Functions::il2cpp_string_new(NameToSet);
-				//data.SetPlayerName(str);
-				Game::g_LocalPlayer.RpcSetName(str);
-				/*data.MarkDirty();
-
-				HazelWriter writer = Game::g_AmongUsClient.StartRpcImmediately(netid, 6, 1, -1); // 6 = setname
-				printf("NetId: %d, client: %p, writer: %p\n", netid, Game::g_AmongUsClient.self, writer.self);
-				writer.WriteStr(str);
-				writer.Write("randomaaa");
-				Game::g_AmongUsClient.FinishRpcImmediately(writer);*/
-
-				//printf("PlayerId: %d, gameid: %d, ticks: %llu\n", playerid, gameid, ticks);
-			}
-			if(ImGui::Button("Set All Names")){
-				void* str = il2cpp_Functions::il2cpp_string_new(NameToSet);
-				for(int i = 0; i < Game::g_PlayerList.size(); i++){
-					PlayerControl plr = Game::g_PlayerList[i];
-					if(!plr) break;
-					plr.RpcSetName(str);
-				}
-			}
-
-			if(ImGui::Button("me red")) {
-				Game::g_LocalPlayer.SetColor(0); //red
-				//rpc
-				//HazelWriter writer = Game::g_AmongUsClient.StartRpcImmediately(netid, 8, 1, -1); // 8 = setcolor
-				//printf("NetId: %d, client: %p, writer: %p\n", netid, Game::g_AmongUsClient.self, writer.self);
-				//writer.WriteInt(0);
-				//Game::g_AmongUsClient.FinishRpcImmediately(writer);
-			}
-		}
-
-		ImGui::Separator();
 		
-		ImGui::Checkbox("No Kill Cooldown", &noCooldown);
-		ImGui::Checkbox("Label Impostors", &ShowImposters); // didn't implement yet.
-		ImGui::Checkbox("Esp", &Esp);
+		if(ImGui::BeginTabBar("tabs")) {
+			if(ImGui::BeginTabItem("Main")) {
+				ImGui::Text("testtest gay");
+				if(Game::g_LocalPlayer){
+					PlayerPhysics physics = Game::g_LocalPlayer.GetPlayerPhysics();
+					if(physics){
+						float* speed = physics.GetSpeed();
+						ImGui::SliderFloat("Speed", speed, 0, 20, "%.1f");
+					}
 
-		ImGui::Separator();
+					float* kill = Game::g_LocalPlayer.GetKillTimer();
+					ImGui::Text("Cooldown: %.1f", *kill);
 
-		if(ImGui::Button("Enable Shadows")) SetShadows(true);
-		if(ImGui::Button("Disable Shadows")) SetShadows(false);
+					float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
+					ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
 
-		ImGui::Separator();
+					static const char* anims[] = {
+						"Shields",
+						"Asteroids",
+						"Trash"
+					};
+					static const AnimType anim_values[] = {
+						AnimType::SHIELDS,
+						AnimType::METEOR,
+						AnimType::TRASH
+					};
+					static int anim_index = 0;
+					ImGui::Combo("Animations", &anim_index, anims, IM_ARRAYSIZE(anims));
+					if(ImGui::Button("Play animation")) {
+						Game::g_LocalPlayer.RpcPlayAnimation(anim_values[anim_index]);
+					}
 
-		if(ImGui::Button("Enable Noclip")) SetNoclip(true);
-		if(ImGui::Button("Disable Noclip")) SetNoclip(false);
+					PlayerData data = Game::g_LocalPlayer.GetNetworkedData();
 
-		ImGui::Separator();
+					CosmeticsLayer cosmetics = Game::g_LocalPlayer.GetCosmetics();
+					Color4* color = cosmetics.GetNameColor();
+					color->r = 0;
+					/*
+					TODO:
+					Reach innernetclient so write a program that graphs from root(static fields) to target.
+					StartRpcImmediately
 
-		if(ImGui::Button("Complete my tasks")) {
-			if(!CompleteAllTasks(Game::g_LocalPlayer)) {
-				printf("Complete All tasks returns false. No list of tasks found.\n");
-			}
-		}
+					bruh,
+					AmongUsInstance addr = InnerNetClientAddr
 
-		if(Game::g_PlayerList){
-			for(int i = 0; i < Game::g_PlayerList.size(); i++){
-				PlayerControl player = Game::g_PlayerList[i];
-				if(!player) break;
+					RCX (1st param aka. SELF) = AmongUsInstance When calling "StartRpcImmediately"
 
-				PlayerData playerData = player.GetNetworkedData();
-				if(!playerData) continue;
+					*/
+					//printf("R: %.1f, G: %.1f, B: %.1f, A: %.1f\n", color->r, color->g, color->b, color->a);
+					
+					uint32_t netid = Game::g_LocalPlayer.NetId();
+					int32_t gameid = Game::g_AmongUsClient.GameId();
+					uint8_t playerid = Game::g_LocalPlayer.PlayerId();
+
+					if(ImGui::Button("imp pls")) { //Pls work
+						//TODO: Breakpoints in setrole and before calls to see the value retrieved from stack
+						Game::g_RoleManager.SetRole(Game::g_LocalPlayer, 1); // so that's the function
+					}
+					ImGui::InputText("Name", NameToSet, IM_ARRAYSIZE(NameToSet));
+					if(ImGui::Button("Set My Name")){
+						//uint64_t ticks = tick();
+
+						void* str = il2cpp_Functions::il2cpp_string_new(NameToSet);
+						//data.SetPlayerName(str);
+						Game::g_LocalPlayer.RpcSetName(str);
+						/*data.MarkDirty();
+
+						HazelWriter writer = Game::g_AmongUsClient.StartRpcImmediately(netid, 6, 1, -1); // 6 = setname
+						printf("NetId: %d, client: %p, writer: %p\n", netid, Game::g_AmongUsClient.self, writer.self);
+						writer.WriteStr(str);
+						writer.Write("randomaaa");
+						Game::g_AmongUsClient.FinishRpcImmediately(writer);*/
+
+						//printf("PlayerId: %d, gameid: %d, ticks: %llu\n", playerid, gameid, ticks);
+					}
+					if(ImGui::Button("Set All Names")){
+						void* str = il2cpp_Functions::il2cpp_string_new(NameToSet);
+						for(int i = 0; i < Game::g_PlayerList.size(); i++){
+							PlayerControl plr = Game::g_PlayerList[i];
+							if(!plr) break;
+							plr.RpcSetName(str);
+						}
+					}
+
+					if(ImGui::Button("me red")) {
+						Game::g_LocalPlayer.SetColor(0); //red
+						//rpc
+						//HazelWriter writer = Game::g_AmongUsClient.StartRpcImmediately(netid, 8, 1, -1); // 8 = setcolor
+						//printf("NetId: %d, client: %p, writer: %p\n", netid, Game::g_AmongUsClient.self, writer.self);
+						//writer.WriteInt(0);
+						//Game::g_AmongUsClient.FinishRpcImmediately(writer);
+					}
+				}
 
 				ImGui::Separator();
-				ImGui::Text("Name: %ls", playerData.GetPlayerName());
+				
+				ImGui::Checkbox("No Kill Cooldown", &noCooldown);
+				ImGui::Checkbox("Label Impostors", &ShowImposters); // didn't implement yet.
 
-				Role role = playerData.GetRole();
-				if(!role) continue;
-				bool isBad = *role.GetTeamType();
-				ImGui::TextColored(ImVec4(isBad, !isBad, !isBad, 1), "Team: %d", isBad);
+				ImGui::Separator();
+
+				if(ImGui::Button("Enable Shadows")) SetShadows(true);
+				if(ImGui::Button("Disable Shadows")) SetShadows(false);
+
+				ImGui::Separator();
+
+				if(ImGui::Button("Enable Noclip")) SetNoclip(true);
+				if(ImGui::Button("Disable Noclip")) SetNoclip(false);
+
+				ImGui::Separator();
+
+				if(ImGui::Button("Complete my tasks")) {
+					if(!CompleteAllTasks(Game::g_LocalPlayer)) {
+						printf("Complete All tasks returns false. No list of tasks found.\n");
+					}
+				}
+				ImGui::EndTabItem();
 			}
+
+			if(ImGui::BeginTabItem("Players")) {
+				if(Game::g_PlayerList){
+					for(int i = 0; i < Game::g_PlayerList.size(); i++){
+						PlayerControl player = Game::g_PlayerList[i];
+						if(!player) break;
+
+						PlayerData playerData = player.GetNetworkedData();
+						if(!playerData) continue;
+
+						ImGui::Separator();
+						ImGui::Text("Name: %ls", playerData.GetPlayerName());
+
+						Role role = playerData.GetRole();
+						if(!role) continue;
+						bool isBad = *role.GetTeamType();
+						ImGui::TextColored(ImVec4(isBad, !isBad, !isBad, 1), "Team: %d", isBad);
+					}
+				}else{
+					ImGui::Text("Couldn't find player list.");
+				}
+				ImGui::EndTabItem();
+			}
+
+			if(ImGui::BeginTabItem("Esp")) {
+				ImGui::Checkbox("Esp", &Esp);
+				ImGui::ColorPicker4("Esp Crew", EspCrew);
+				ImGui::ColorPicker4("Esp Impostor", EspImpostor);
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
 		}
+		
 		ImGui::End();
 	}
 	
