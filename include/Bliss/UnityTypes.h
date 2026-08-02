@@ -7,12 +7,14 @@
 struct Il2CppMemberInfo {
     enum Type {
         FIELD,
+        STATIC_FIELD,
         METHOD
     };
 
     Type type;
     size_t offset = 0;
     size_t paramCount = 0;
+    void* static_field = nullptr;
     void* methodPtr = nullptr;
 
     Il2CppMemberInfo() : type(Type::FIELD), offset(0), paramCount(0), methodPtr(nullptr) {};

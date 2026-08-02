@@ -18,6 +18,10 @@ namespace Offsets {
     inline MemberMap TransformMembers;
     inline MemberMap GameObjectMembers;
     inline MemberMap UnityEngineBehaviourMembers;
+    inline MemberMap ShipStatusMembers;
+    inline MemberMap SystemTypesMembers;
+    inline MemberMap GameOptionsManagerMembers;
+    inline MemberMap NormalGameOptionsV10Members;
 
     void Init();
 }

@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <cstdint>
 #include <string>
+#include <functional>
 #include <Bliss/Offsets.h>
 #include <Bliss/il2cpp_Functions.h>
 #include <Bliss/UnityTypes.h>
@@ -23,6 +24,47 @@ struct Vec3 {
 
 struct Vec2 {
     float x,y;
+};
+
+struct TickTask {
+    uint64_t next_run;
+    uint64_t interval;
+    std::function<bool()> fn; // true = keep going. false = delete task.
+};
+
+class TickManager {
+public:
+    static std::vector<TickTask> tasks;
+
+    static void AddTask(uint64_t interval, std::function<bool()> fn) {
+        uint64_t now = GetTickCount64();
+        tasks.push_back({
+            now + interval,
+            interval,
+            std::move(fn)
+        });
+    }
+
+    static void Tick() {
+        uint64_t now = GetTickCount64();
+
+        for(auto it = tasks.begin(); it != tasks.end();) {
+            if(!it->fn) {
+                it = tasks.erase(it);
+                continue;
+            }
+            if(now >= it->next_run) {
+                if(it->fn()) {
+                    it->next_run = now + it->interval;
+                }else{
+                    it = tasks.erase(it);
+                    continue;
+                }
+            }
+
+            it++;
+        }
+    }
 };
 
 template <typename T, typename = std::enable_if<std::is_base_of<Il2CppObject, T>::value>::type>
@@ -73,6 +115,33 @@ public:
 
 struct Empty : Il2CppObject {
     Empty(void* self) : Il2CppObject(self, nullptr) {};
+};
+
+struct SystemTypes {
+    static const char* the_skeld[7]; // 0
+    static const char* polus[7]; // 2
+    static const char* airship[6]; // 4
+    static const char* the_fungle[7]; // 5
+
+    static int GetType(const char* name) {
+        auto it = Offsets::SystemTypesMembers.find(name);
+        if(it == Offsets::SystemTypesMembers.end()) return -1;
+        Il2CppMemberInfo info = it->second;
+
+        return reinterpret_cast<uint64_t>(info.static_field) & 0xFF;
+    }
+
+    static const char** GetArray(unsigned char MapId, size_t& size) {
+        switch (MapId)
+        {
+        case 0: size=7; return the_skeld;
+        case 2: size=7; return polus;
+        case 4: size=6; return airship;
+        case 5: size=7; return the_fungle;
+        
+        default: return nullptr;
+        }
+    }
 };
 
 struct PlayerPhysics : Il2CppObject {
@@ -271,6 +340,38 @@ struct Camera : Il2CppObject {
     }
 };
 
+struct ShipStatus : Il2CppObject {
+    ShipStatus(void* self) : Il2CppObject(self, &Offsets::ShipStatusMembers) {};
+
+    void RpcUpdateSystem(int system_type, int byte_amount) {
+        void* params[2];
+        params[0] = &system_type;
+        params[1] = &byte_amount;
+
+        CallMethod<void>("RpcUpdateSystem", params);
+    }
+
+    void RpcCloseDoorsOfType(int n) {
+        void* params[1];
+        params[0] = &n;
+        CallMethod<void>("RpcCloseDoorsOfType", params);
+    }
+
+    void RpcCloseAllDoors(unsigned char MapId) {
+        size_t size = 0;
+        const char** names = SystemTypes::GetArray(MapId, size);
+        if(names == nullptr) return;
+
+        TickManager::AddTask(150, [this, idx = 0, names, size]() mutable -> bool {
+            const char* name = names[idx++];
+            int id = SystemTypes::GetType(name);
+            RpcCloseDoorsOfType(id);
+            printf("Closed door id: %d\n", id);
+            return idx < size;
+        });
+    }
+};
+
 struct HazelWriter : Il2CppObject {
     HazelWriter(void* self) : Il2CppObject(self, &Offsets::WriterMembers) {};
 
@@ -290,8 +391,37 @@ struct HazelWriter : Il2CppObject {
     }
 };
 
+struct NormalGameOptionsV10 : Il2CppObject {
+    NormalGameOptionsV10(void* self) : Il2CppObject(self, &Offsets::NormalGameOptionsV10Members) {};
+
+    unsigned char* MapId() {
+        return GetField<unsigned char>("<MapId>k__BackingField");
+    }
+};
+
+struct GameOptionsManager : Il2CppObject {
+    GameOptionsManager(void* self) : Il2CppObject(self, &Offsets::GameOptionsManagerMembers) {};
+
+    NormalGameOptionsV10 CurrentGameOptions() {
+        void* addr = *GetField<void*>("currentGameOptions");
+        return NormalGameOptionsV10(addr);
+    }
+
+    void Update() { // I surprisingly can't read static value via il2cpp but it has function to get Instance so.
+        self = CallStaticMethod<void>("get_Instance");
+    }
+};
+
 struct AmongUsClient : Il2CppObject {
     AmongUsClient(void* self) : Il2CppObject(self, &Offsets::AmongUsClientMembers) {};
+
+    int32_t NetworkMode() {
+        return *GetField<uint32_t>("NetworkMode");
+    }
+
+    int32_t TutorialMapId() {
+        return *GetField<uint32_t>("TutorialMapId");
+    }
 
     int32_t GameId() {
         return *GetField<int32_t>("GameId");
@@ -342,5 +472,7 @@ namespace Game{
     extern ListWrapper<PlayerControl> g_PlayerList;
     extern AmongUsClient g_AmongUsClient;
     extern RoleManager g_RoleManager;
+    extern ShipStatus g_ShipStatus;
+    extern GameOptionsManager g_GameOptionsManager;
     void UpdateGlobals();
 }

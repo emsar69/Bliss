@@ -15,6 +15,7 @@ void il2cpp_Functions::SetupFunctions(HMODULE addr){
     Resv(addr, il2cpp_domain_get);
     Resv(addr, il2cpp_field_get_name);
     Resv(addr, il2cpp_field_get_offset);
+    Resv(addr, il2cpp_field_get_type);
     Resv(addr, il2cpp_field_get_value);
     Resv(addr, il2cpp_field_static_get_value);
     Resv(addr, il2cpp_image_get_name);
@@ -25,6 +26,7 @@ void il2cpp_Functions::SetupFunctions(HMODULE addr){
     Resv(addr, il2cpp_string_new);
     Resv(addr, il2cpp_thread_attach);
     Resv(addr, il2cpp_thread_detach);
+    Resv(addr, il2cpp_type_get_attrs);
     Resv(addr, il2cpp_type_get_name);
     Resv(addr, il2cpp_type_get_object);
 }

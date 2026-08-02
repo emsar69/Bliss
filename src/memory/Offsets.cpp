@@ -7,14 +7,26 @@ void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
     void* entry = nullptr;
     while((entry = il2cpp_Functions::il2cpp_class_get_fields(klass, &iter)) != nullptr){
         const char* name = il2cpp_Functions::il2cpp_field_get_name(entry);
-        size_t offset = il2cpp_Functions::il2cpp_field_get_offset(entry);
+
+        void* type = il2cpp_Functions::il2cpp_field_get_type(entry);
+        uint32_t attr = il2cpp_Functions::il2cpp_type_get_attrs(type);
 
         Il2CppMemberInfo info;
-        info.type = Il2CppMemberInfo::Type::FIELD;
-        info.offset = offset;
+        if(attr & 0x10) { // Remember that this initializes ONCE. meaning, only access if that's fixed data. like roleids or doorids.
+            void* static_val;
+            il2cpp_Functions::il2cpp_field_static_get_value(entry, &static_val);
+            info.type = Il2CppMemberInfo::Type::STATIC_FIELD;
+            info.static_field = static_val;
 
+            printf("%s.%s = %p (static)\n", ClassName, name, static_val);
+        } else {
+            size_t offset = il2cpp_Functions::il2cpp_field_get_offset(entry);
+            info.type = Il2CppMemberInfo::Type::FIELD;
+            info.offset = offset;
+            
+            printf("%s.%s = 0x%02x\n", ClassName, name, offset);
+        }
         arr[name] = info;
-        printf("%s.%s = 0x%02x\n", ClassName, name, offset);
     }
 
     iter = nullptr;
@@ -75,6 +87,10 @@ void Offsets::Init() {
     FindMembers("Transform", TransformMembers, "UnityEngine", Memory::UnityEngine_CoreModule);
     FindMembers("GameObject", GameObjectMembers, "UnityEngine", Memory::UnityEngine_CoreModule);
     FindMembers("Behaviour", UnityEngineBehaviourMembers, "UnityEngine", Memory::UnityEngine_CoreModule); // That's for not typing unnecessary classes over and over again.
+    FindMembers("ShipStatus", ShipStatusMembers);
+    FindMembers("SystemTypes", SystemTypesMembers);
+    FindMembers("GameOptionsManager", GameOptionsManagerMembers);
+    FindMembers("NormalGameOptionsV10", NormalGameOptionsV10Members, "AmongUs.GameOptions");
 
     void* addr = WriterMembers["Write.String"].methodPtr;
     MEMORY_BASIC_INFORMATION mbi;

@@ -13,6 +13,7 @@ using il2cpp_domain_get_assemblies_t = void*(__fastcall*)(void* a1, size_t* a2);
 using il2cpp_domain_get_t = void*(__fastcall*)();
 using il2cpp_field_get_name_t = const char*(__fastcall*)(void*);
 using il2cpp_field_get_offset_t = size_t(__fastcall*)(void*);
+using il2cpp_field_get_type_t = void*(__fastcall*)(void*);
 using il2cpp_field_get_value_t = void(__fastcall*)(void*, void*, void*);
 using il2cpp_field_static_get_value_t = void(__fastcall*)(void*, void*);
 using il2cpp_image_get_name_t = const char*(__fastcall*)(void*);
@@ -23,6 +24,7 @@ using il2cpp_runtime_invoke_t = void*(__fastcall*)(void*, void*, void**, void**)
 using il2cpp_string_new_t = void*(__fastcall*)(const char*);
 using il2cpp_thread_attach_t = void*(__fastcall*)(void*);
 using il2cpp_thread_detach_t = void*(__fastcall*)(void*);
+using il2cpp_type_get_attrs_t = int(__fastcall*)(void*);
 using il2cpp_type_get_name_t = const char*(__fastcall*)(void*);
 using il2cpp_type_get_object_t = void*(__fastcall*)(void*);
 
@@ -38,6 +40,7 @@ namespace il2cpp_Functions {
     inline il2cpp_domain_get_t il2cpp_domain_get;
     inline il2cpp_field_get_name_t il2cpp_field_get_name;
     inline il2cpp_field_get_offset_t il2cpp_field_get_offset;
+    inline il2cpp_field_get_type_t il2cpp_field_get_type;
     inline il2cpp_field_get_value_t il2cpp_field_get_value;
     inline il2cpp_field_static_get_value_t il2cpp_field_static_get_value;
     inline il2cpp_image_get_name_t il2cpp_image_get_name;
@@ -48,6 +51,7 @@ namespace il2cpp_Functions {
     inline il2cpp_string_new_t il2cpp_string_new;
     inline il2cpp_thread_attach_t il2cpp_thread_attach;
     inline il2cpp_thread_detach_t il2cpp_thread_detach;
+    inline il2cpp_type_get_attrs_t il2cpp_type_get_attrs;
     inline il2cpp_type_get_name_t il2cpp_type_get_name;
     inline il2cpp_type_get_object_t il2cpp_type_get_object;
 

@@ -243,12 +243,27 @@ void HandleFeatures(){
 	}
 }
 
+unsigned char GetCurrentMapId() {
+	if(Game::g_AmongUsClient.NetworkMode() == 2) { // FreePlay
+		return Game::g_AmongUsClient.TutorialMapId();
+	}else{
+		NormalGameOptionsV10 options = Game::g_GameOptionsManager.CurrentGameOptions();
+		if(!options) return 255;
+
+		unsigned char* map_id = options.MapId();
+		if(map_id == nullptr) return 255;
+
+		return *map_id;
+	}
+}
+
 void Gui::Render(){
 	if(!Offsets::Initialized) return;
     ImGui_ImplWin32_NewFrame();
 	ImGui_ImplDX11_NewFrame();
 	ImGui::NewFrame();
 	HandleFeatures();
+	TickManager::Tick();
 
 	//ImGui::ShowStyleEditor();
 	//ImGui::ShowDemoWindow();
@@ -268,9 +283,6 @@ void Gui::Render(){
 
 					float* kill = Game::g_LocalPlayer.GetKillTimer();
 					ImGui::Text("Cooldown: %.1f", *kill);
-
-					float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
-					ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
 
 					static const char* anims[] = {
 						"Shields",
@@ -372,6 +384,33 @@ void Gui::Render(){
 						printf("Complete All tasks returns false. No list of tasks found.\n");
 					}
 				}
+
+				ImGui::EndTabItem();
+			}
+			
+			if(ImGui::BeginTabItem("Impostor")) {
+				float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
+				ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
+
+				if(ImGui::Button("Close All Doors") && Game::g_ShipStatus) {
+					unsigned char MapId = GetCurrentMapId();
+					Game::g_ShipStatus.RpcCloseAllDoors(MapId);
+				}
+
+				ImGui::Separator();
+				if(ImGui::Button("Sabotage Reactor") && Game::g_ShipStatus) {
+					int system_type = SystemTypes::GetType("Reactor");
+					Game::g_ShipStatus.RpcUpdateSystem(system_type, 128);
+				}
+				if(ImGui::Button("Sabotage O2") && Game::g_ShipStatus) {
+					int system_type = SystemTypes::GetType("LifeSupp");
+					Game::g_ShipStatus.RpcUpdateSystem(system_type, 128);
+				}
+				if(ImGui::Button("Sabotage Lights (Unfixable)") && Game::g_ShipStatus) {
+					int system_type = SystemTypes::GetType("Electrical");
+					Game::g_ShipStatus.RpcUpdateSystem(system_type, 7); // 7 somehow is unfixable^^
+				}
+
 				ImGui::EndTabItem();
 			}
 
