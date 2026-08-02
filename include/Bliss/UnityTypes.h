@@ -34,9 +34,15 @@ struct Il2CppObject {
         return CallMethod<void>("GetComponent", params);
     }
 
-    explicit operator bool() noexcept {
+    explicit operator bool() noexcept { //turns out not all objects have m_CachedPtr.
+        if(self == nullptr) return false;
+        if(members->find("m_CachedPtr") == members->end()) return true; //return true because it has no m_CachedPtr and self is valid.
+
         void** ptr = GetField<void*>("m_CachedPtr");
-        return self != nullptr && *ptr != nullptr;
+        if(ptr == nullptr) return false;
+        if(*ptr == nullptr) return false;
+
+        return true;
     }
 
 protected:
