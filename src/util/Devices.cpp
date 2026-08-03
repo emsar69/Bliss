@@ -3,6 +3,12 @@
 
 bool SetupDirectX() {
 	D3D_FEATURE_LEVEL levels[] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1 };
+	RECT clientRect{};
+	if (!GetClientRect(Gui::window, &clientRect))
+		return false;
+
+	const UINT clientWidth = static_cast<UINT>(clientRect.right - clientRect.left);
+	const UINT clientHeight = static_cast<UINT>(clientRect.bottom - clientRect.top);
 	
 	ZeroMemory(&Devices::g_d3dSwapChain, sizeof(Devices::g_d3dSwapChain));
 
@@ -11,16 +17,18 @@ bool SetupDirectX() {
 	Devices::g_d3dSwapChain.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	Devices::g_d3dSwapChain.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	Devices::g_d3dSwapChain.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	Devices::g_d3dSwapChain.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	// This swap chain only exists long enough to obtain the DXGI vtable used by
+	// the hooks. Never allow it to switch the monitor's display mode.
+	Devices::g_d3dSwapChain.Flags = 0;
 	Devices::g_d3dSwapChain.OutputWindow = Gui::window;
 	Devices::g_d3dSwapChain.SampleDesc.Count = 1;
-	Devices::g_d3dSwapChain.Windowed = ((GetWindowLongPtr(Gui::window, GWL_STYLE) & WS_POPUP) != 0) ? false : true;
+	Devices::g_d3dSwapChain.Windowed = TRUE;
 	Devices::g_d3dSwapChain.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	Devices::g_d3dSwapChain.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	Devices::g_d3dSwapChain.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	Devices::g_d3dSwapChain.BufferDesc.Width = 1;
-	Devices::g_d3dSwapChain.BufferDesc.Height = 1;
+	Devices::g_d3dSwapChain.BufferDesc.Width = clientWidth > 0 ? clientWidth : 1;
+	Devices::g_d3dSwapChain.BufferDesc.Height = clientHeight > 0 ? clientHeight : 1;
 	Devices::g_d3dSwapChain.BufferDesc.RefreshRate.Numerator = 0;
 	Devices::g_d3dSwapChain.BufferDesc.RefreshRate.Denominator = 1;
 
