@@ -25,4 +25,4 @@ Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution guidelines.
 
 ---
 
-Contributors are listed in no particular order. Thank you for helping improve this project 💙
+Contributors are listed in no particular order. Thank you for helping improve this project! 💙
