@@ -18,7 +18,6 @@ We welcome contributions of all kinds, including:
 - Bug fixes
 - New features
 - Documentation improvements
-- Tests
 - Performance optimizations
 - Code reviews
 
