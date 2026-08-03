@@ -9,7 +9,7 @@ Thank you to everyone who has contributed to this project!
 ## Contributors
 
 - **Canx** (@xnac0)
-  - Bug fixes, optimization
+  - Bug fixes, optimization.
 
 ## How to Contribute
 
