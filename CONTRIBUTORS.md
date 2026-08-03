@@ -4,7 +4,7 @@ Thank you to everyone who has contributed to this project!
 
 ## Core Contributors
 
-- **emsar69** — Project creator and maintainer
+- **Emsar** (@emsar69) — Project creator and maintainer
 
 ## Contributors
 
@@ -21,6 +21,7 @@ We welcome contributions of all kinds, including:
 - Tests
 - Performance optimizations
 - Code reviews
+
 
 Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution guidelines.
 
