@@ -4,7 +4,7 @@ Thank you to everyone who has contributed to this project!
 
 ## Core Contributor
 
-- **Emsar** (@emsar69) — Project creator and maintainer
+- **Emsar** (@emsar69) — Project creator and maintainer.
 
 ## Contributors
 
