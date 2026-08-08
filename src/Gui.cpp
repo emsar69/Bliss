@@ -230,7 +230,8 @@ void HandleFeatures(){
 
 				if(isBad) {
 					// Draw kill cooldown
-					float timer = player.self == Game::g_LocalPlayer.self ? *player.GetKillTimer() : player.GetKillTimerState();
+					//float timer = player.self == Game::g_LocalPlayer.self ? *player.GetKillTimer() : player.GetKillTimerState();
+					float timer = player.GetKillTimerState();
 					int G = 50+timer*10;
 					if(G > 255) G = 255;
 
