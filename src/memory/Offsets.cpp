@@ -35,7 +35,7 @@ void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
         
         Il2CppMemberInfo info;
         info.type = Il2CppMemberInfo::Type::METHOD;
-        info.methodPtr = entry;
+        info.method_object = entry;
 
         // I actually could've write this better lol but I'm too lazy to think about it since this works.
         if(strcmp(name, "Write") == 0) {
@@ -92,7 +92,7 @@ void Offsets::Init() {
     FindMembers("GameOptionsManager", GameOptionsManagerMembers);
     FindMembers("NormalGameOptionsV10", NormalGameOptionsV10Members, "AmongUs.GameOptions");
 
-    void* addr = WriterMembers["Write.String"].methodPtr;
+    void* addr = WriterMembers["Write.String"].method_object;
     MEMORY_BASIC_INFORMATION mbi;
     VirtualQuery(addr, &mbi, sizeof(mbi));
     printf("Permissions for Write.String:\nReg size: 0x%X, Protect: 0x%X, State: 0x%x\n", mbi.RegionSize, mbi.Protect, mbi.State);

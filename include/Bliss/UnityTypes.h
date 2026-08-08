@@ -15,9 +15,9 @@ struct Il2CppMemberInfo {
     size_t offset = 0;
     size_t paramCount = 0;
     void* static_field = nullptr;
-    void* methodPtr = nullptr;
+    void* method_object = nullptr;
 
-    Il2CppMemberInfo() : type(Type::FIELD), offset(0), paramCount(0), methodPtr(nullptr) {};
+    Il2CppMemberInfo() : type(Type::FIELD), offset(0), paramCount(0), method_object(nullptr) {};
 };
 
 using MemberMap = std::unordered_map<std::string, Il2CppMemberInfo>;
@@ -72,7 +72,7 @@ protected:
         }
 
         void* exp = nullptr;
-        void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.methodPtr, inst, params, &exp);
+        void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.method_object, inst, params, &exp);
 
         if(exp) {
             printf("EXCEPTION IN CALL METHOD!!!!\n\nMETHOD NAME: %s\nINSTANCE: %p\n", MethodName, inst);
