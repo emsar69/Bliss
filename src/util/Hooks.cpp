@@ -116,7 +116,7 @@ void __stdcall Hooks::MurderPlayerHook(void* self, void* target, int flags) noex
 	if(flags & 1) { // lowest bit stands for successful kill.
 		PlayerControl killer(self);
 
-		// TODO: Handle
+		killer.state.last_kill = GetTickCount64();
 	}
 
 	oMurderPlayer(self, target, flags);

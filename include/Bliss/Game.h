@@ -230,6 +230,15 @@ struct PlayerControl : Il2CppObject {
         return GetField<float>("killTimer");
     }
 
+    float GetKillTimerState() { // Useful for other players.
+        uint64_t tick = GetTickCount64();
+        if(tick == 0) return 0;
+        
+        uint64_t dif = tick - state.last_kill;
+        float seconds = dif/1000;
+        return seconds;
+    }
+
     uint8_t PlayerId(){
         return *GetField<uint8_t>("PlayerId");
     }
