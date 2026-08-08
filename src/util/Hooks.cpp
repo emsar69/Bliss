@@ -38,6 +38,12 @@ void Hooks::Setup() {
 		reinterpret_cast<LPVOID*>(&oResize)
 	)) throw std::runtime_error("unable to create ResizeHook");
 
+	if(MH_CreateHook(
+		reinterpret_cast<LPVOID>(Offsets::PlayerControlMembers["MurderPlayer"].method_addr),
+		reinterpret_cast<LPVOID>(&MurderPlayerHook),
+		reinterpret_cast<LPVOID*>(&oMurderPlayer)
+	)) throw std::runtime_error("unable to create PlayerMurder hook");
+
 	if (MH_EnableHook(MH_ALL_HOOKS))
 		throw std::runtime_error("Unable to enable hooks");
 }
@@ -104,4 +110,14 @@ HRESULT __stdcall Hooks::ResizeHook(IDXGISwapChain* pSwapChain, UINT BufferCount
 	ImGui_ImplDX11_CreateDeviceObjects();
 	
 	return hr;
+}
+
+void __stdcall Hooks::MurderPlayerHook(void* self, void* target, int flags) noexcept {
+	if(flags & 1) { // lowest bit stands for successful kill.
+		PlayerControl killer(self);
+
+		// TODO: Handle
+	}
+
+	oMurderPlayer(self, target, flags);
 }

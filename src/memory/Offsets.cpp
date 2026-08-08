@@ -36,6 +36,7 @@ void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
         Il2CppMemberInfo info;
         info.type = Il2CppMemberInfo::Type::METHOD;
         info.method_object = entry;
+        info.method_addr = *reinterpret_cast<void**>(entry); // First 8 bytes of the method object is the address of the method itself.
 
         // I actually could've write this better lol but I'm too lazy to think about it since this works.
         if(strcmp(name, "Write") == 0) {

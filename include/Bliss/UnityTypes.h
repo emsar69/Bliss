@@ -16,8 +16,9 @@ struct Il2CppMemberInfo {
     size_t paramCount = 0;
     void* static_field = nullptr;
     void* method_object = nullptr;
+    void* method_addr = nullptr;
 
-    Il2CppMemberInfo() : type(Type::FIELD), offset(0), paramCount(0), method_object(nullptr) {};
+    Il2CppMemberInfo() : type(Type::FIELD), offset(0), paramCount(0), method_object(nullptr), method_addr(nullptr) {};
 };
 
 using MemberMap = std::unordered_map<std::string, Il2CppMemberInfo>;
