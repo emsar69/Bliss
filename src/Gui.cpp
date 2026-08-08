@@ -389,8 +389,8 @@ void Gui::Render(){
 			}
 			
 			if(ImGui::BeginTabItem("Impostor")) {
-				float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
-				ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
+				//float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
+				//ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
 
 				if(ImGui::Button("Close All Doors") && Game::g_ShipStatus) {
 					unsigned char MapId = GetCurrentMapId();
