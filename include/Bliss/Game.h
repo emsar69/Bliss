@@ -202,7 +202,7 @@ struct CosmeticsLayer : Il2CppObject {
 };
 
 struct PlayerControl : Il2CppObject {
-    PlayerControl(void* self) : Il2CppObject(self, &Offsets::PlayerControlMembers) {};
+    PlayerControl(void* self) : Il2CppObject(self, &Offsets::PlayerControlMembers), state(states[self]) {};
 
     bool* GetEnabled() {
         return CallMethod<bool>("get_enabled");
@@ -275,6 +275,14 @@ struct PlayerControl : Il2CppObject {
         //TODO: Add crash handler at runtime invoker
         CallMethod<void>("SetColor", params);
     }
+
+    struct PlayerState {
+        uint64_t last_kill = 0;
+        //... And more to add if wanted to keep.
+    };
+    PlayerState& state;
+
+    inline static std::unordered_map<void*, PlayerState> states;
 };
 
 struct Behaviour : Il2CppObject {
