@@ -201,8 +201,36 @@ struct CosmeticsLayer : Il2CppObject {
     }
 };
 
+struct NormalGameOptionsV10 : Il2CppObject {
+    NormalGameOptionsV10(void* self) : Il2CppObject(self, &Offsets::NormalGameOptionsV10Members) {};
+
+    unsigned char* MapId() {
+        return GetField<unsigned char>("<MapId>k__BackingField");
+    }
+
+    float* KillCooldown() {
+        return GetField<float>("KillCooldown");
+    }
+};
+
+struct GameOptionsManager : Il2CppObject {
+    GameOptionsManager(void* self) : Il2CppObject(self, &Offsets::GameOptionsManagerMembers) {};
+
+    NormalGameOptionsV10 CurrentGameOptions() {
+        void* addr = *GetField<void*>("currentGameOptions");
+        return NormalGameOptionsV10(addr);
+    }
+
+    void Update() { // I surprisingly can't read static value via il2cpp but it has function to get Instance so.
+        self = CallStaticMethod<void>("get_Instance");
+    }
+};
+
+namespace Game{
+    extern GameOptionsManager g_GameOptionsManager;
+}
 struct PlayerControl : Il2CppObject {
-    PlayerControl(void* self) : Il2CppObject(self, &Offsets::PlayerControlMembers) {};
+    PlayerControl(void* self) : Il2CppObject(self, &Offsets::PlayerControlMembers), state(states[self]) {};
 
     bool* GetEnabled() {
         return CallMethod<bool>("get_enabled");
@@ -228,6 +256,21 @@ struct PlayerControl : Il2CppObject {
 
     float* GetKillTimer(){
         return GetField<float>("killTimer");
+    }
+
+    float GetKillTimerState() { // Useful for other players.
+        uint64_t tick = GetTickCount64();
+        if(tick == 0) return 0;
+        if(!Game::g_GameOptionsManager) return 0;
+
+        NormalGameOptionsV10 options = Game::g_GameOptionsManager.CurrentGameOptions();
+        if(!options) return 0;
+
+        float imp_cooldown = *options.KillCooldown();
+        float seconds_passed = ((float)(tick - state.last_kill))/1000.0f;
+        if(seconds_passed >= imp_cooldown) return 0;
+        
+        return imp_cooldown - seconds_passed;
     }
 
     uint8_t PlayerId(){
@@ -275,6 +318,14 @@ struct PlayerControl : Il2CppObject {
         //TODO: Add crash handler at runtime invoker
         CallMethod<void>("SetColor", params);
     }
+
+    struct PlayerState {
+        uint64_t last_kill = 0;
+        //... And more to add if wanted to keep.
+    };
+    PlayerState& state;
+
+    inline static std::unordered_map<void*, PlayerState> states;
 };
 
 struct Behaviour : Il2CppObject {
@@ -391,27 +442,6 @@ struct HazelWriter : Il2CppObject {
     }
 };
 
-struct NormalGameOptionsV10 : Il2CppObject {
-    NormalGameOptionsV10(void* self) : Il2CppObject(self, &Offsets::NormalGameOptionsV10Members) {};
-
-    unsigned char* MapId() {
-        return GetField<unsigned char>("<MapId>k__BackingField");
-    }
-};
-
-struct GameOptionsManager : Il2CppObject {
-    GameOptionsManager(void* self) : Il2CppObject(self, &Offsets::GameOptionsManagerMembers) {};
-
-    NormalGameOptionsV10 CurrentGameOptions() {
-        void* addr = *GetField<void*>("currentGameOptions");
-        return NormalGameOptionsV10(addr);
-    }
-
-    void Update() { // I surprisingly can't read static value via il2cpp but it has function to get Instance so.
-        self = CallStaticMethod<void>("get_Instance");
-    }
-};
-
 struct AmongUsClient : Il2CppObject {
     AmongUsClient(void* self) : Il2CppObject(self, &Offsets::AmongUsClientMembers) {};
 
@@ -473,6 +503,6 @@ namespace Game{
     extern AmongUsClient g_AmongUsClient;
     extern RoleManager g_RoleManager;
     extern ShipStatus g_ShipStatus;
-    extern GameOptionsManager g_GameOptionsManager;
+    //extern GameOptionsManager g_GameOptionsManager; // Already defined. God I hate this structure to be honest.
     void UpdateGlobals();
 }

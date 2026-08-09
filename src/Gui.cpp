@@ -230,12 +230,12 @@ void HandleFeatures(){
 
 				if(isBad) {
 					// Draw kill cooldown
-					float timer = *player.GetKillTimer();
+					float timer = player.self == Game::g_LocalPlayer.self ? *player.GetKillTimer() : player.GetKillTimerState();
 					int G = 50+timer*10;
 					if(G > 255) G = 255;
 
 					char buf[32] = {0};
-					std::snprintf(buf, sizeof(buf), "Cooldown: %.1fs", timer);
+					std::snprintf(buf, sizeof(buf), "Est. Cooldown: %.1fs", timer);
 					draw_list->AddText(ImGui::GetFont(), 25.0f, {screen.x-50, screen.y}, IM_COL32(240, G, 34, 255), buf);
 				}
 			}
@@ -283,6 +283,9 @@ void Gui::Render(){
 
 					float* kill = Game::g_LocalPlayer.GetKillTimer();
 					ImGui::Text("Cooldown: %.1f", *kill);
+
+					float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
+					ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
 
 					static const char* anims[] = {
 						"Shields",
@@ -389,9 +392,6 @@ void Gui::Render(){
 			}
 			
 			if(ImGui::BeginTabItem("Impostor")) {
-				//float* report_distance = Game::g_LocalPlayer.MaxReportDistance();
-				//ImGui::SliderFloat("Report Distance", report_distance, 0.0f, 10.0f, "%.1f", ImGuiSliderFlags_NoSpeedTweaks);
-
 				if(ImGui::Button("Close All Doors") && Game::g_ShipStatus) {
 					unsigned char MapId = GetCurrentMapId();
 					Game::g_ShipStatus.RpcCloseAllDoors(MapId);
