@@ -235,7 +235,7 @@ void HandleFeatures(){
 					if(G > 255) G = 255;
 
 					char buf[32] = {0};
-					std::snprintf(buf, sizeof(buf), "Cooldown: %.1fs", timer);
+					std::snprintf(buf, sizeof(buf), "Est. Cooldown: %.1fs", timer);
 					draw_list->AddText(ImGui::GetFont(), 25.0f, {screen.x-50, screen.y}, IM_COL32(240, G, 34, 255), buf);
 				}
 			}
