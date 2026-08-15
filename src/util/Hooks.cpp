@@ -112,7 +112,7 @@ HRESULT __stdcall Hooks::ResizeHook(IDXGISwapChain* pSwapChain, UINT BufferCount
 	return hr;
 }
 
-void __stdcall Hooks::MurderPlayerHook(void* self, void* target, int flags) noexcept {
+void __cdecl Hooks::MurderPlayerHook(void* self, void* target, int flags) noexcept {
 	if(flags & 1) { // lowest bit stands for successful kill.
 		PlayerControl killer(self);
 
