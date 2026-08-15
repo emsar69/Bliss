@@ -79,9 +79,10 @@ public:
 
     void Update(void* ListAddr){
         char* charAddr = reinterpret_cast<char*>(ListAddr);
-        char* items = *reinterpret_cast<char**>(charAddr+0x10);
-        count = *reinterpret_cast<int*>(charAddr+0x18);
-        data = reinterpret_cast<T**>(items + 0x20);
+        size_t stride = sizeof(void*);
+        char* items = *reinterpret_cast<char**>(charAddr+(stride*2));
+        count = *reinterpret_cast<int*>(charAddr+(stride*3));
+        data = reinterpret_cast<T**>(items + (stride*4)); // Which is first entry btw. it-begin();
     }
 
     T operator[](size_t index) {
