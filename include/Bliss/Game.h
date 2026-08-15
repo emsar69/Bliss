@@ -170,7 +170,7 @@ struct PlayerData : Il2CppObject {
     }
 
     const wchar_t* GetPlayerName() {
-        wchar_t* BaseStringAddr = CallMethod<wchar_t>("get_PlayerName", nullptr) + (3 * sizeof(void*))/2; // Dividing by 2 because wchar_t is 2 bytes.
+        wchar_t* BaseStringAddr = CallMethod<wchar_t>("get_PlayerName", nullptr) + (2 * sizeof(void*) + 4)/2; // Dividing by 2 because wchar_t is 2 bytes.
         return BaseStringAddr;
     }
 
