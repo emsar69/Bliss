@@ -3,6 +3,7 @@
 #include <Bliss/Offsets.h>
 
 #include <cstdio>
+#include <stdexcept>
 #include "Memory.h"
 
 void Memory::Init(){
@@ -11,7 +12,17 @@ void Memory::Init(){
     il2cpp_Functions::SetupFunctions(GameAssembly);
     
     Domain = il2cpp_Functions::il2cpp_domain_get();
+    if(Domain == nullptr) {
+        throw std::runtime_error("No domain were returned.");
+        return;
+    }
+
     Assembles = il2cpp_Functions::il2cpp_domain_get_assemblies(Domain, &Assemble_Count);
+    if(Assemble_Count == 0) {
+        throw std::runtime_error("No assembles were returned.");
+        return;
+    }
+
     CSharpAssemble = GetAssembleByName("Assembly-CSharp.dll");
     Hazel = GetAssembleByName("Hazel.dll");
     UnityEngine_CoreModule = GetAssembleByName("UnityEngine.CoreModule.dll");
