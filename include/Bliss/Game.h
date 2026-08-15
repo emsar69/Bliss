@@ -158,6 +158,14 @@ struct Role : Il2CppObject {
     int* GetTeamType(){
         return GetField<int>("TeamType");
     }
+
+    bool* GetCanVent() {
+        return GetField<bool>("canVent");
+    }
+
+    void* GetPlayerAddr() {
+        return *GetField<void*>("Player");
+    }
 };
 
 struct PlayerData : Il2CppObject {
@@ -241,6 +249,13 @@ struct PlayerControl : Il2CppObject {
         params[0] = &index;
 
         CallMethod<void>("RpcCompleteTask", params);
+    }
+
+    void CmdCheckMurder(const PlayerControl& target) {
+        void* params[1];
+        params[0] = target.self;
+
+        CallMethod<void>("CmdCheckMurder", params);
     }
 
     ListWrapper<Empty> GetTasks() {

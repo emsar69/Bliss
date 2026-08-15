@@ -392,6 +392,15 @@ void Gui::Render(){
 			}
 			
 			if(ImGui::BeginTabItem("Impostor")) {
+				if(ImGui::Button("Kill") && Game::g_LocalPlayer) {
+					Gui::enable_get_is_impostor_hook = true;
+
+					PlayerControl target = Game::g_PlayerList[3];
+					Game::g_LocalPlayer.CmdCheckMurder(target);
+
+					Gui::enable_get_is_impostor_hook = false;
+				}
+
 				if(ImGui::Button("Close All Doors") && Game::g_ShipStatus) {
 					unsigned char MapId = GetCurrentMapId();
 					Game::g_ShipStatus.RpcCloseAllDoors(MapId);

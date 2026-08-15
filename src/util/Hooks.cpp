@@ -44,6 +44,12 @@ void Hooks::Setup() {
 		reinterpret_cast<LPVOID*>(&oMurderPlayer)
 	)) throw std::runtime_error("unable to create PlayerMurder hook");
 
+	if(MH_CreateHook(
+		reinterpret_cast<LPVOID>(Offsets::RoleMembers["get_IsImpostor"].method_addr),
+		reinterpret_cast<LPVOID>(&get_IsImpostorHook),
+		reinterpret_cast<LPVOID*>(&oGet_IsImpostor)
+	)) throw std::runtime_error("unable to create get_IsImpostor hook");
+
 	if (MH_EnableHook(MH_ALL_HOOKS))
 		throw std::runtime_error("Unable to enable hooks");
 }
@@ -120,4 +126,16 @@ void __stdcall Hooks::MurderPlayerHook(void* self, void* target, int flags) noex
 	}
 
 	oMurderPlayer(self, target, flags);
+}
+
+bool __stdcall Hooks::get_IsImpostorHook(void* self) noexcept {
+	if(!Gui::enable_get_is_impostor_hook) return oGet_IsImpostor(self);
+
+	Role role(self);
+
+	if(role.GetPlayerAddr() == Game::g_LocalPlayer.self && Game::g_LocalPlayer) {
+		return true; // Trick client into thinking you're impostor.
+	}
+
+    return oGet_IsImpostor(self);
 }

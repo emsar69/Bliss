@@ -7,6 +7,8 @@ namespace Gui {
     inline bool enabled = true;
 	inline bool setup = false;
 
+    inline bool enable_get_is_impostor_hook = false; // I'll remove all features to single header later.
+
 	inline HWND window = NULL;
 	inline WNDPROC originalWindowProcess = nullptr;
 

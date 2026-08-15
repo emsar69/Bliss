@@ -20,4 +20,9 @@ namespace Hooks {
 	inline MurderPlayerFn oMurderPlayer = nullptr;
 
 	void __stdcall MurderPlayerHook(void* self, void* target, int flags) noexcept;
+
+	typedef bool (__stdcall* get_IsImpostorFn)(void* self);
+	inline get_IsImpostorFn oGet_IsImpostor = nullptr;
+
+	bool __stdcall get_IsImpostorHook(void* self) noexcept;
 }
