@@ -16,8 +16,8 @@ namespace Hooks {
 
 	HRESULT __stdcall ResizeHook(IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags) noexcept;
 
-	typedef void (__stdcall* MurderPlayerFn)(void* self, void* target, int flags);
+	typedef void (__cdecl* MurderPlayerFn)(void* self, void* target, int flags);
 	inline MurderPlayerFn oMurderPlayer = nullptr;
 
-	void __stdcall MurderPlayerHook(void* self, void* target, int flags) noexcept;
+	void __cdecl MurderPlayerHook(void* self, void* target, int flags) noexcept;
 }

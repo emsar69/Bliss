@@ -79,9 +79,10 @@ public:
 
     void Update(void* ListAddr){
         char* charAddr = reinterpret_cast<char*>(ListAddr);
-        char* items = *reinterpret_cast<char**>(charAddr+0x10);
-        count = *reinterpret_cast<int*>(charAddr+0x18);
-        data = reinterpret_cast<T**>(items + 0x20);
+        size_t stride = sizeof(void*);
+        char* items = *reinterpret_cast<char**>(charAddr+(stride*2));
+        count = *reinterpret_cast<int*>(charAddr+(stride*3));
+        data = reinterpret_cast<T**>(items + (stride*4)); // Which is first entry btw. it-begin();
     }
 
     T operator[](size_t index) {
@@ -169,7 +170,7 @@ struct PlayerData : Il2CppObject {
     }
 
     const wchar_t* GetPlayerName() {
-        wchar_t* BaseStringAddr = CallMethod<wchar_t>("get_PlayerName", nullptr) + 0x14/2;
+        wchar_t* BaseStringAddr = CallMethod<wchar_t>("get_PlayerName", nullptr) + (3 * sizeof(void*))/2; // Dividing by 2 because wchar_t is 2 bytes.
         return BaseStringAddr;
     }
 
@@ -251,7 +252,7 @@ struct PlayerControl : Il2CppObject {
     Vec2* GetPosition() {
         uintptr_t* ret = CallMethod<uintptr_t>("GetTruePosition");
         if(!ret) return nullptr;
-        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(ret) + 0x10);
+        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(ret) + (2 * sizeof(void*)));
     }
 
     float* GetKillTimer(){
@@ -386,8 +387,8 @@ struct Camera : Il2CppObject {
         uintptr_t* ret = CallMethod<uintptr_t>("WorldToScreenPoint_dup_1", params);
         if(!ret) return nullptr;
 
-        //adding 0x10 cuz it starts from 0x10.
-        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(ret) + 0x10); //Camera.WorldToScreenPoint_dup_1()
+        //adding 0x10 cuz it starts from 0x10. (0x10 in 64bit & 0x8 in 32 bit)
+        return reinterpret_cast<Vec2*>(reinterpret_cast<uintptr_t>(ret) + (2 * sizeof(void*))); //Camera.WorldToScreenPoint_dup_1()
     }
 };
 
