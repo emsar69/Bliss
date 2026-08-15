@@ -11,6 +11,9 @@ Thank you to everyone who has contributed to this project!
 - **Canx** (@xnac0)
   - Bug fixes, optimization.
 
+- **Alex** (@al-ex427)
+  - Helped in testing & issues.
+
 ## How to Contribute
 
 We welcome contributions of all kinds, including:
