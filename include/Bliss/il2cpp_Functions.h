@@ -2,31 +2,33 @@
 
 #include <Windows.h>
 
-using il2cpp_assembly_get_image_t = void*(__fastcall*)(void*);
-using il2cpp_class_from_name_t = void*(__fastcall*)(void*, const char*, const char*);
-using il2cpp_class_get_field_from_name_t = void*(__fastcall*)(void*, const char*);
-using il2cpp_class_get_fields_t = void*(__fastcall*)(void*, void**);
-using il2cpp_class_get_methods_t = void*(__fastcall*)(void*, void**);
-using il2cpp_class_get_parent_t = void*(__fastcall*)(void*);
-using il2cpp_class_get_type_t = void*(__fastcall*)(void*);
-using il2cpp_domain_get_assemblies_t = void*(__fastcall*)(void* a1, size_t* a2);
-using il2cpp_domain_get_t = void*(__fastcall*)();
-using il2cpp_field_get_name_t = const char*(__fastcall*)(void*);
-using il2cpp_field_get_offset_t = size_t(__fastcall*)(void*);
-using il2cpp_field_get_type_t = void*(__fastcall*)(void*);
-using il2cpp_field_get_value_t = void(__fastcall*)(void*, void*, void*);
-using il2cpp_field_static_get_value_t = void(__fastcall*)(void*, void*);
-using il2cpp_image_get_name_t = const char*(__fastcall*)(void*);
-using il2cpp_method_get_name_t = const char*(__fastcall*)(void*);
-using il2cpp_method_get_param_count_t = size_t(__fastcall*)(void*);
-using il2cpp_method_get_param_t = void*(__fastcall*)(void*, int);
-using il2cpp_runtime_invoke_t = void*(__fastcall*)(void*, void*, void**, void**);
-using il2cpp_string_new_t = void*(__fastcall*)(const char*);
-using il2cpp_thread_attach_t = void*(__fastcall*)(void*);
-using il2cpp_thread_detach_t = void*(__fastcall*)(void*);
-using il2cpp_type_get_attrs_t = int(__fastcall*)(void*);
-using il2cpp_type_get_name_t = const char*(__fastcall*)(void*);
-using il2cpp_type_get_object_t = void*(__fastcall*)(void*);
+#define IL2CPP_CALLING_CONVENTION __cdecl
+
+using il2cpp_assembly_get_image_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_class_from_name_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, const char*, const char*);
+using il2cpp_class_get_field_from_name_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, const char*);
+using il2cpp_class_get_fields_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, void**);
+using il2cpp_class_get_methods_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, void**);
+using il2cpp_class_get_parent_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_class_get_type_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_domain_get_assemblies_t = void*(IL2CPP_CALLING_CONVENTION*)(void* a1, size_t* a2);
+using il2cpp_domain_get_t = void*(IL2CPP_CALLING_CONVENTION*)();
+using il2cpp_field_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_field_get_offset_t = size_t(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_field_get_type_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_field_get_value_t = void(IL2CPP_CALLING_CONVENTION*)(void*, void*, void*);
+using il2cpp_field_static_get_value_t = void(IL2CPP_CALLING_CONVENTION*)(void*, void*);
+using il2cpp_image_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_method_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_method_get_param_count_t = size_t(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_method_get_param_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, int);
+using il2cpp_runtime_invoke_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, void*, void**, void**);
+using il2cpp_string_new_t = void*(IL2CPP_CALLING_CONVENTION*)(const char*);
+using il2cpp_thread_attach_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_thread_detach_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_type_get_attrs_t = int(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_type_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_type_get_object_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
 
 namespace il2cpp_Functions {
     inline il2cpp_assembly_get_image_t il2cpp_assembly_get_image;
