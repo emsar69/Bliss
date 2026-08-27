@@ -280,7 +280,7 @@ struct PlayerControl : Il2CppObject {
     }
 
     float GetKillTimerState() { // Useful for other players.
-        uint64_t tick = GetTickCount64();
+        uint64_t tick = TickManager::GetTicks();
         if(tick == 0) return 0;
         if(!Game::g_GameOptionsManager) return 0;
 
@@ -486,7 +486,7 @@ struct AmongUsClient : Il2CppObject {
         return *GetField<bool>("isConnecting");
     }
 
-    HazelWriter StartRpcImmediately(int32_t targetNetId, byte callId, byte isReliable, int32_t targetClientId) {
+    HazelWriter StartRpcImmediately(int32_t targetNetId, char callId, char isReliable, int32_t targetClientId) {
         void *params[4];
         params[0] = &targetNetId;
         params[1] = &callId;
