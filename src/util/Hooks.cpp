@@ -2,6 +2,7 @@
 #include <Bliss/Gui.h>
 #include <Bliss/Memory.h>
 #include <Bliss/Offsets.h>
+#include <Bliss/Logger.h>
 
 #include <stdexcept>
 #include <cstdint>
@@ -18,7 +19,7 @@
 
 void Hooks::Setup() {
 	#if defined(__ANDROID__)
-		printf("hooks\n");
+		Logger::Debug("hooks\n");
 	#elif defined(_WIN32)
 		if (MH_Initialize() != MH_OK)
 			throw std::runtime_error("MinHook initialization error");
@@ -57,7 +58,7 @@ void Hooks::Setup() {
 
 void Hooks::Destroy() {
 	#if defined(__ANDROID__)
-		printf("Destroyed hooks\n");
+		Logger::Debug("Destroyed hooks\n");
 	#elif defined(_WIN32)
 		MH_DisableHook(MH_ALL_HOOKS);
 		MH_RemoveHook(MH_ALL_HOOKS);

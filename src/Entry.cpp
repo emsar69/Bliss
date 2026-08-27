@@ -7,17 +7,16 @@
 #include <Bliss/Hooks.h>
 #include <Bliss/Memory.h>
 #include <Bliss/Gui.h>
+#include <Bliss/Logger.h>
 
 #if defined(__ANDROID__)
-
-#include <android/log.h> // Won'T be here, im testing it rn
 
 void* AndEntry(void*) {
     try{
         Memory::Init();
         Hooks::Setup();
     }catch(const std::exception& e){
-        __android_log_print(ANDROID_LOG_DEBUG, "Bliss", "Error: %s", e.what());
+        Logger::Fatal("Error during setup: %s", e.what());
     }
     
     return nullptr;
@@ -25,6 +24,7 @@ void* AndEntry(void*) {
 
 __attribute__((constructor))
 void SoMain() {
+    Logger::Debug("Hello from main!");
     pthread_t thread;
     pthread_create(&thread, nullptr, AndEntry, nullptr);
     pthread_detach(thread);

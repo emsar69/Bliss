@@ -7,6 +7,7 @@
 #include <Bliss/Offsets.h>
 #include <Bliss/il2cpp_Functions.h>
 #include <Bliss/UnityTypes.h>
+#include <Bliss/Logger.h>
 
 #if defined(__ANDROID__)
     #include <time.h>
@@ -438,7 +439,7 @@ struct ShipStatus : Il2CppObject {
             const char* name = names[idx++];
             int id = SystemTypes::GetType(name);
             RpcCloseDoorsOfType(id);
-            printf("Closed door id: %d\n", id);
+            Logger::Debug("Closed door id: %d\n", id);
             return idx < size;
         });
     }

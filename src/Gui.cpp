@@ -3,7 +3,7 @@
 // See the LICENSE file for the full license text.
 
 #include <Bliss/Gui.h>
-
+#include <Bliss/Logger.h>
 #include <Bliss/Memory.h>
 #include <Bliss/Game.h>
 
@@ -44,7 +44,7 @@ uint64_t tick() {
 }
 
 void SetupCommon() {
-		if (ImGui::CreateContext() == nullptr) printf("NO context created.\n");
+		if (ImGui::CreateContext() == nullptr) Logger::Error("NO context created.\n");
 	//ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -162,7 +162,7 @@ bool SetNoclip(bool active) {
 	if(!Game::g_LocalPlayer) return false;
 	void* ADDR_CC2D = Game::g_LocalPlayer.GetComponent(Types::CircleCollider2D);
 	Behaviour CC2D(ADDR_CC2D);
-	printf("CC2D: %p\n", ADDR_CC2D);
+	Logger::Debug("CC2D: %p\n", ADDR_CC2D);
 	if(!CC2D) return false;
 	CC2D.SetEnabled(!active); // Disables/Enables CircleCollider2D inside of the character.
 
@@ -432,7 +432,7 @@ void Gui::Render(){
 
 				if(ImGui::Button("Complete my tasks")) {
 					if(!CompleteAllTasks(Game::g_LocalPlayer)) {
-						printf("Complete All tasks returns false. No list of tasks found.\n");
+						Logger::Debug("Complete All tasks returns false. No list of tasks found.\n");
 					}
 				}
 

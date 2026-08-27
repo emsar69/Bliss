@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Bliss/il2cpp_Functions.h>
+#include <Bliss/Logger.h>
 #include <unordered_map>
 #include <string>
 
@@ -63,12 +64,12 @@ protected:
         if(!members) return nullptr;
         auto it = members->find(MethodName);
         if(it == members->end()) {
-            printf("Attempted to access invalid method name: %s\n", MethodName);
+            Logger::Warn("Attempted to access invalid method name: %s\n", MethodName);
             return nullptr;
         }
         Il2CppMemberInfo member = it->second;
         if(member.type != Il2CppMemberInfo::Type::METHOD) {
-            printf("%s is NOT a method.\n", MethodName);
+            Logger::Warn("%s is NOT a method.\n", MethodName);
             return nullptr;
         }
 
@@ -76,7 +77,7 @@ protected:
         void* result = il2cpp_Functions::il2cpp_runtime_invoke(member.method_object, inst, params, &exp);
 
         if(exp) {
-            printf("EXCEPTION IN CALL METHOD!!!!\n\nMETHOD NAME: %s\nINSTANCE: %p\n", MethodName, inst);
+            Logger::Error("EXCEPTION IN CALL METHOD!!!!\n\nMETHOD NAME: %s\nINSTANCE: %p\n", MethodName, inst);
             return nullptr;
         }
 
@@ -86,7 +87,7 @@ protected:
     template <typename T>
     T* CallMethod(const char* MethodName, void** params=nullptr){
         if(self == nullptr) {
-            printf("Tried to call instance method where instance is NOT DEFINED PROPERLY.\n\nMethod Name: %s\n", MethodName);
+            Logger::Warn("Tried to call instance method where instance is NOT DEFINED PROPERLY.\n\nMethod Name: %s\n", MethodName);
             return nullptr;
         }
         return CallStaticMethod<T>(MethodName, params, self);

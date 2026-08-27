@@ -1,6 +1,7 @@
 #include <Bliss/Offsets.h>
 #include <Bliss/Memory.h>
 #include <Bliss/il2cpp_Functions.h>
+#include <Bliss/Logger.h>
 
 void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
     void* iter = nullptr;
@@ -18,13 +19,13 @@ void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
             info.type = Il2CppMemberInfo::Type::STATIC_FIELD;
             info.static_field = static_val;
 
-            printf("%s.%s = %p (static)\n", ClassName, name, static_val);
+            Logger::Verbose("%s.%s = %p (static)\n", ClassName, name, static_val);
         } else {
             size_t offset = il2cpp_Functions::il2cpp_field_get_offset(entry);
             info.type = Il2CppMemberInfo::Type::FIELD;
             info.offset = offset;
             
-            printf("%s.%s = 0x%02x\n", ClassName, name, offset);
+            Logger::Verbose("%s.%s = 0x%02x\n", ClassName, name, offset);
         }
         arr[name] = info;
     }
@@ -45,17 +46,17 @@ void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
             type = "Write"+type.substr(6);
             
             arr[type] = info;
-            printf("%s.%s() = 0x%p\n", ClassName, type.c_str(), entry);
+            Logger::Verbose("%s.%s() = 0x%p\n", ClassName, type.c_str(), entry);
         }else{
             if(arr.contains(name)) {
                 int param_count = il2cpp_Functions::il2cpp_method_get_param_count(entry);
                 std::string nm(name);
                 nm += "_dup_"+std::to_string(param_count); // and I don't care if there're more than 2 duplicates. too lazy + not needed
                 arr[nm.c_str()] = info;
-                printf("%s.%s() = 0x%p\n", ClassName, nm.c_str(), entry);
+                Logger::Verbose("%s.%s() = 0x%p\n", ClassName, nm.c_str(), entry);
             }else{
                 arr[name] = info;
-                printf("%s.%s() = 0x%p\n", ClassName, name, entry);
+                Logger::Verbose("%s.%s() = 0x%p\n", ClassName, name, entry);
             }
         }
     }
@@ -67,7 +68,7 @@ void FindMembersRecursive(const char* ClassName, void* klass, MemberMap& arr) {
 void FindMembers(const char* ClassName, MemberMap& arr, const char* NameSpace="", void* Base = Memory::CSharpAssemble){
     void* klass = il2cpp_Functions::il2cpp_class_from_name(Base, NameSpace, ClassName);
     if(klass == nullptr) {
-        printf("Couldn't find class with;\nNameSpace: %s\nName: %s\n", NameSpace, ClassName);
+        Logger::Warn("Couldn't find class with;\nNameSpace: %s\nName: %s\n", NameSpace, ClassName);
         return;
     }
 
