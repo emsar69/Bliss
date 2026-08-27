@@ -4,7 +4,6 @@
 
 #include <cstdio>
 #include <stdexcept>
-#include "Memory.h"
 
 void Memory::Init(){
     Memory::GameAssembly = GetModuleHandleA("GameAssembly.dll");

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <Windows.h>
+#ifdef __ANDROID__
+    #define __cdecl
+#endif
 
 #define IL2CPP_CALLING_CONVENTION __cdecl
 
@@ -11,16 +13,16 @@ using il2cpp_class_get_fields_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, void*
 using il2cpp_class_get_methods_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, void**);
 using il2cpp_class_get_parent_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
 using il2cpp_class_get_type_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
-using il2cpp_domain_get_assemblies_t = void*(IL2CPP_CALLING_CONVENTION*)(void* a1, size_t* a2);
+using il2cpp_domain_get_assemblies_t = void*(IL2CPP_CALLING_CONVENTION*)(void* a1, unsigned int* a2);
 using il2cpp_domain_get_t = void*(IL2CPP_CALLING_CONVENTION*)();
 using il2cpp_field_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
-using il2cpp_field_get_offset_t = size_t(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_field_get_offset_t = unsigned int(IL2CPP_CALLING_CONVENTION*)(void*);
 using il2cpp_field_get_type_t = void*(IL2CPP_CALLING_CONVENTION*)(void*);
 using il2cpp_field_get_value_t = void(IL2CPP_CALLING_CONVENTION*)(void*, void*, void*);
 using il2cpp_field_static_get_value_t = void(IL2CPP_CALLING_CONVENTION*)(void*, void*);
 using il2cpp_image_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
 using il2cpp_method_get_name_t = const char*(IL2CPP_CALLING_CONVENTION*)(void*);
-using il2cpp_method_get_param_count_t = size_t(IL2CPP_CALLING_CONVENTION*)(void*);
+using il2cpp_method_get_param_count_t = unsigned int(IL2CPP_CALLING_CONVENTION*)(void*);
 using il2cpp_method_get_param_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, int);
 using il2cpp_runtime_invoke_t = void*(IL2CPP_CALLING_CONVENTION*)(void*, void*, void**, void**);
 using il2cpp_string_new_t = void*(IL2CPP_CALLING_CONVENTION*)(const char*);
@@ -57,5 +59,5 @@ namespace il2cpp_Functions {
     inline il2cpp_type_get_name_t il2cpp_type_get_name;
     inline il2cpp_type_get_object_t il2cpp_type_get_object;
 
-    void SetupFunctions(HMODULE il2cpp_addr);
+    void SetupFunctions(void* il2cpp_addr);
 }

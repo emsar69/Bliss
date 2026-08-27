@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // See the LICENSE file for the full license text.
 
-#include <Windows.h>
+#if defined(__ANDROID__)
+    #include <android/log.h>
+#elif defined(__WIN32__)
+    #include <windows.h>
+#endif
+
 #include <thread>
 #include <exception>
 #include <Bliss/Devices.h>

@@ -1,9 +1,16 @@
 #include <Bliss/il2cpp_Functions.h>
 
-#define Resv(addr, n) \
-    n = (n##_t)GetProcAddress(addr, #n);
+#if defined(__ANDROID__)
+    #include <dlfcn.h>
+    #define Resv(addr, n) \
+        n = (n##_t)dlsym(addr, #n);
+#elif defined(__WIN32__)
+    #include <windows.h>
+    #define Resv(addr, n) \
+        n = (n##_t)GetProcAddress(addr, #n);
+#endif
 
-void il2cpp_Functions::SetupFunctions(HMODULE addr){
+void il2cpp_Functions::SetupFunctions(void* addr){
     Resv(addr, il2cpp_assembly_get_image);
     Resv(addr, il2cpp_class_from_name);
     Resv(addr, il2cpp_class_get_field_from_name);
