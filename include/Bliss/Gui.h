@@ -1,13 +1,15 @@
 #pragma once
 
+#ifdef _WIN32
+    #include <d3d11.h>
+#endif
+
 namespace Gui {
     inline bool open = true;
     inline bool enabled = true;
 	inline bool setup = false;
 
     #if defined(_WIN32)
-        #include <d3d11.h>
-
         inline HWND window = NULL;
         inline WNDPROC originalWindowProcess = nullptr;
 

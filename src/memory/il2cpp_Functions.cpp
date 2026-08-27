@@ -7,7 +7,7 @@
 #elif defined(_WIN32)
     #include <windows.h>
     #define Resv(addr, n) \
-        n = (n##_t)GetProcAddress(addr, #n);
+        n = (n##_t)GetProcAddress((HMODULE)addr, #n);
 #endif
 
 void il2cpp_Functions::SetupFunctions(void* addr){

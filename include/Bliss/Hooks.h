@@ -4,12 +4,15 @@
 	#define __cdecl
 #endif
 
+#ifdef _WIN32
+	#include <d3d11.h>
+#endif
+
 namespace Hooks {
     void Setup();
     void Destroy();
 
 	#ifdef _WIN32
-		#include <d3d11.h>
 
 		typedef HRESULT(__stdcall* PresentFn)(IDXGISwapChain*, UINT, UINT);
 		inline PresentFn oPresent = nullptr;
