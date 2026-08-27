@@ -10,8 +10,11 @@
 #include <Bliss/Logger.h>
 
 #if defined(__ANDROID__)
+#include <unistd.h>
 
 void* AndEntry(void*) {
+    usleep(4 * 1000 * 1000);
+    Logger::Debug("Hello from entry!");
     try{
         Memory::Init();
         Hooks::Setup();
