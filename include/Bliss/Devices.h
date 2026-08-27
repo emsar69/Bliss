@@ -1,5 +1,7 @@
 #pragma once
 
+#if defined(__WIN32__)
+
 #include <windows.h>
 #include <d3d11.h>
 #include <stdexcept>
@@ -18,3 +20,6 @@ namespace Devices {
     void Init();
     void Destroy();
 }
+
+
+#endif

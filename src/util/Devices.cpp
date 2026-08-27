@@ -1,3 +1,6 @@
+#ifdef __WIN32__ //Disable completely if its not win32
+
+
 #include <Bliss/Devices.h>
 #include <Bliss/Gui.h>
 
@@ -81,3 +84,5 @@ void Devices::Destroy() {
 
 	DestroyDirectX();
 }
+
+#endif

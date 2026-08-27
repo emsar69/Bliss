@@ -5,8 +5,24 @@
 #include <cstdio>
 #include <stdexcept>
 
+#if defined(__ANDROID__)
+    #include <dlfcn.h>
+#elif defined(__WIN32__)
+    #include <libloaderapi.h>
+#endif
+
 void Memory::Init(){
-    Memory::GameAssembly = GetModuleHandleA("GameAssembly.dll");
+    #if defined(__ANDROID__)
+        Memory::GameAssembly = dlopen("libil2cpp.so", RTLD_NOW);
+    #elif defined(__WIN32__)
+        Memory::GameAssembly = GetModuleHandleA("GameAssembly.dll");
+    #endif
+
+    if(!Memory::GameAssembly) {
+        puts("No il2cpp info were found!");
+        throw std::runtime_error("No il2cpp info were found!");
+        return;
+    }
 
     il2cpp_Functions::SetupFunctions(GameAssembly);
     

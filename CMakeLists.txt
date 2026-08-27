@@ -34,11 +34,27 @@ file(GLOB_RECURSE BLISS_SRC
     "src/*.cpp"
 )
 
-file(GLOB_RECURSE IMGUI_SRC
+file(GLOB IMGUI_CORE_SRC
     "include/imgui/*.cpp"
 )
 
-add_library(Bliss SHARED ${BLISS_SRC} ${IMGUI_SRC})
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+
+    file(GLOB IMGUI_PLATFORM_SRC
+        "include/imgui/backends/imgui_impl_android.cpp"
+        "include/imgui/backends/imgui_impl_opengl3.cpp"
+    )
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+    file(GLOB IMGUI_PLATFORM_SRC
+        "include/imgui/backends/imgui_impl_win32.cpp"
+        "include/imgui/backends/imgui_impl_dx11.cpp"
+    )
+
+endif()
+
+add_library(Bliss SHARED ${BLISS_SRC} ${IMGUI_CORE_SRC} ${IMGUI_PLATFORM_SRC})
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(Bliss PRIVATE -static-libgcc -static-libstdc++ -static)
@@ -57,5 +73,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
     # TODO: Hooking lib for android
     # NOT COMPLETE!
 
-    target_link_libraries(Bliss PRIVATE) # TODO: Add libraries (will do)
+    target_link_libraries(Bliss PRIVATE
+        log
+    ) # TODO: Add libraries (will do)
 endif()

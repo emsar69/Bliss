@@ -1,61 +1,74 @@
 #include <Bliss/Hooks.h>
-#include <Bliss/Devices.h>
 #include <Bliss/Gui.h>
 #include <Bliss/Memory.h>
 #include <Bliss/Offsets.h>
 
 #include <stdexcept>
 #include <cstdint>
-#include <intrin.h>
 
-#include <MinHook.h>
 #include <imgui/imgui.h>
-#include <imgui/backends/imgui_impl_win32.h>
-#include <imgui/backends/imgui_impl_dx11.h>
+
+#ifdef __WIN32__
+	#include <intrin.h>
+	#include <imgui/backends/imgui_impl_win32.h>
+	#include <imgui/backends/imgui_impl_dx11.h>
+	#include <Bliss/Devices.h>
+	#include <MinHook.h>
+#endif
 
 void Hooks::Setup() {
-	if (MH_Initialize() != MH_OK)
-		throw std::runtime_error("MinHook initialization error");
+	#if defined(__ANDROID__)
+		printf("hooks\n");
+	#elif defined(__WIN32__)
+		if (MH_Initialize() != MH_OK)
+			throw std::runtime_error("MinHook initialization error");
 
-	std::uintptr_t* swapChainPointer =
-		static_cast<std::uintptr_t*>(static_cast<void*>(Devices::g_pSwapChain));
+		std::uintptr_t* swapChainPointer =
+			static_cast<std::uintptr_t*>(static_cast<void*>(Devices::g_pSwapChain));
 
-	std::uintptr_t* virtualTablePointer =
-		reinterpret_cast<std::uintptr_t*>(swapChainPointer[0]);
+		std::uintptr_t* virtualTablePointer =
+			reinterpret_cast<std::uintptr_t*>(swapChainPointer[0]);
 
-	oPresent = (PresentFn)(virtualTablePointer[8]);
-    oResize = (ResizeFn)(virtualTablePointer[13]);
+		oPresent = (PresentFn)(virtualTablePointer[8]);
+		oResize = (ResizeFn)(virtualTablePointer[13]);
 
-	if (MH_CreateHook(
-		reinterpret_cast<LPVOID>(virtualTablePointer[8]),
-		reinterpret_cast<LPVOID>(&PresentHook),
-		reinterpret_cast<LPVOID*>(&oPresent)
-	)) throw std::runtime_error("unable to create PresentHook");
+		if (MH_CreateHook(
+			reinterpret_cast<LPVOID>(virtualTablePointer[8]),
+			reinterpret_cast<LPVOID>(&PresentHook),
+			reinterpret_cast<LPVOID*>(&oPresent)
+		)) throw std::runtime_error("unable to create PresentHook");
 
-	if (MH_CreateHook(
-		reinterpret_cast<LPVOID>(virtualTablePointer[13]),
-		reinterpret_cast<LPVOID>(&ResizeHook),
-		reinterpret_cast<LPVOID*>(&oResize)
-	)) throw std::runtime_error("unable to create ResizeHook");
+		if (MH_CreateHook(
+			reinterpret_cast<LPVOID>(virtualTablePointer[13]),
+			reinterpret_cast<LPVOID>(&ResizeHook),
+			reinterpret_cast<LPVOID*>(&oResize)
+		)) throw std::runtime_error("unable to create ResizeHook");
 
-	if(MH_CreateHook(
-		reinterpret_cast<LPVOID>(Offsets::PlayerControlMembers["MurderPlayer"].method_addr),
-		reinterpret_cast<LPVOID>(&MurderPlayerHook),
-		reinterpret_cast<LPVOID*>(&oMurderPlayer)
-	)) throw std::runtime_error("unable to create PlayerMurder hook");
+		if(MH_CreateHook(
+			reinterpret_cast<LPVOID>(Offsets::PlayerControlMembers["MurderPlayer"].method_addr),
+			reinterpret_cast<LPVOID>(&MurderPlayerHook),
+			reinterpret_cast<LPVOID*>(&oMurderPlayer)
+		)) throw std::runtime_error("unable to create PlayerMurder hook");
 
-	if (MH_EnableHook(MH_ALL_HOOKS))
-		throw std::runtime_error("Unable to enable hooks");
+		if (MH_EnableHook(MH_ALL_HOOKS))
+			throw std::runtime_error("Unable to enable hooks");
+	#endif
 }
 
 void Hooks::Destroy() {
-	MH_DisableHook(MH_ALL_HOOKS);
-	MH_RemoveHook(MH_ALL_HOOKS);
-	MH_Uninitialize();
+	#if defined(__ANDROID__)
+		printf("Destroyed hooks\n");
+	#elif defined(__WIN32__)
+		MH_DisableHook(MH_ALL_HOOKS);
+		MH_RemoveHook(MH_ALL_HOOKS);
+		MH_Uninitialize();
+	#endif
 
 	// Commented out bcuz it won't work (Different threads)
 	// il2cpp_Functions::il2cpp_thread_detach(Memory::il2cpp_thread);
 }
+
+#ifdef __WIN32__
 
 HRESULT __stdcall Hooks::PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) noexcept {
 	if (!Gui::setup) {
@@ -69,7 +82,7 @@ HRESULT __stdcall Hooks::PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterv
 
 		Memory::il2cpp_thread = il2cpp_Functions::il2cpp_thread_attach(Memory::Domain);
 
-		Gui::SetupMenu(Devices::g_pd3dDevice, Devices::g_pd3dContext);
+		Gui::WinSetupMenu(Devices::g_pd3dDevice, Devices::g_pd3dContext);
 	}
 	
 	if (Gui::enabled){
@@ -112,11 +125,13 @@ HRESULT __stdcall Hooks::ResizeHook(IDXGISwapChain* pSwapChain, UINT BufferCount
 	return hr;
 }
 
+#endif
+
 void __cdecl Hooks::MurderPlayerHook(void* self, void* target, int flags) noexcept {
 	if(flags & 1) { // lowest bit stands for successful kill.
 		PlayerControl killer(self);
 
-		killer.state.last_kill = GetTickCount64();
+		killer.state.last_kill = TickManager::GetTicks();
 	}
 
 	oMurderPlayer(self, target, flags);

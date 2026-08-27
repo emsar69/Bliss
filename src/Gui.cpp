@@ -3,20 +3,24 @@
 // See the LICENSE file for the full license text.
 
 #include <Bliss/Gui.h>
-#include <Bliss/Devices.h>
+
 #include <Bliss/Memory.h>
 #include <Bliss/Game.h>
 
 #include <imgui/imgui.h>
-#include <imgui/backends/imgui_impl_win32.h>
-#include <imgui/backends/imgui_impl_dx11.h>
 
 #include <chrono>
 
 #define IM_COL32_FLOAT(f) IM_COL32(f[0]*255, f[1]*255, f[2]*255, f[3]*255)
 
+#ifdef __WIN32__
+#include <imgui/backends/imgui_impl_win32.h>
+#include <imgui/backends/imgui_impl_dx11.h>
+#include <Bliss/Devices.h>
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#endif
 
 uint64_t tick() {
 	 auto now = std::chrono::system_clock::now();
@@ -39,9 +43,8 @@ uint64_t tick() {
 	return ticks;
 }
 
-void Gui::SetupMenu(ID3D11Device* device, ID3D11DeviceContext* context) {
-
-	if (ImGui::CreateContext() == nullptr) MessageBoxA(NULL, "NO CONTEXT HAS CREATED!", "E", 0);
+void SetupCommon() {
+		if (ImGui::CreateContext() == nullptr) printf("NO context created.\n");
 	//ImGui::StyleColorsDark();
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -117,6 +120,12 @@ void Gui::SetupMenu(ID3D11Device* device, ID3D11DeviceContext* context) {
 	auto& IO = ImGui::GetIO();
 	IO.IniFilename = NULL;
 	IO.LogFilename = NULL;
+}
+
+#if defined(__WIN32__)
+
+void Gui::WinSetupMenu(ID3D11Device* device, ID3D11DeviceContext* context) {
+	SetupCommon();
 
 	Gui::originalWindowProcess = reinterpret_cast<WNDPROC>(
 		SetWindowLongPtr(Gui::window, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(wndProc))
@@ -129,6 +138,18 @@ void Gui::SetupMenu(ID3D11Device* device, ID3D11DeviceContext* context) {
 
 	setup = true;
 }
+
+#elif defined(__ANDROID__)
+
+void Gui::AndSetupMenu() {
+	SetupCommon();
+
+	// Android specific shit. TODO
+
+	setup = true;
+}
+
+#endif
 
 bool noCooldown = false;
 bool ShowImposters = false;
@@ -257,10 +278,37 @@ unsigned char GetCurrentMapId() {
 	}
 }
 
+#if defined(__ANDROID__)
+
+void AndRenderBegin() {
+
+}
+
+void AndRenderEnd() {
+
+}
+
+#elif defined(__WIN32__)
+
+void WinRenderBegin() {
+	ImGui_ImplWin32_NewFrame();
+	ImGui_ImplDX11_NewFrame();
+}
+
+void WinRenderEnd() {
+	Devices::g_pd3dContext->OMSetRenderTargets(1, &Devices::g_mainTargetView, NULL);
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+#endif
+
 void Gui::Render(){
 	if(!Offsets::Initialized) return;
-    ImGui_ImplWin32_NewFrame();
-	ImGui_ImplDX11_NewFrame();
+    #if defined(__ANDROID__)
+		AndRenderBegin();
+	#elif defined(__WIN32__)
+		WinRenderBegin();
+	#endif
 	ImGui::NewFrame();
 	HandleFeatures();
 	TickManager::Tick();
@@ -452,10 +500,14 @@ void Gui::Render(){
 	
 	ImGui::Render();
 
-	Devices::g_pd3dContext->OMSetRenderTargets(1, &Devices::g_mainTargetView, NULL);
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	#if defined(__ANDROID__)
+		AndRenderEnd();
+	#elif defined(__WIN32__)
+		WinRenderEnd();
+	#endif
 }
 
+#ifdef __WIN32__
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	if (GetAsyncKeyState(VK_DELETE) & 1)
 		Gui::open = !Gui::open;
@@ -470,3 +522,4 @@ LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	return CallWindowProc(Gui::originalWindowProcess, hWnd, msg, wParam, lParam);
 }
+#endif

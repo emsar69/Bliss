@@ -2,20 +2,41 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // See the LICENSE file for the full license text.
 
-#if defined(__ANDROID__)
-    #include <android/log.h>
-#elif defined(__WIN32__)
-    #include <windows.h>
-#endif
-
 #include <thread>
 #include <exception>
-#include <Bliss/Devices.h>
 #include <Bliss/Hooks.h>
 #include <Bliss/Memory.h>
 #include <Bliss/Gui.h>
 
-void Entry(HMODULE module) {
+#if defined(__ANDROID__)
+
+#include <android/log.h> // Won'T be here, im testing it rn
+
+void* AndEntry(void*) {
+    try{
+        Memory::Init();
+        Hooks::Setup();
+    }catch(const std::exception& e){
+        __android_log_print(ANDROID_LOG_DEBUG, "Bliss", "Error: %s", e.what());
+    }
+    
+    return nullptr;
+}
+
+__attribute__((constructor))
+void SoMain() {
+    pthread_t thread;
+    pthread_create(&thread, nullptr, AndEntry, nullptr);
+    pthread_detach(thread);
+}
+
+#elif defined(__WIN32__)
+    
+#include <Bliss/Devices.h>
+#include <windows.h>
+
+
+void WinEntry(HMODULE module) {
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
     try{
@@ -41,8 +62,10 @@ UNLOAD:
 BOOL WINAPI DllMain(HMODULE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
     if(fdwReason == DLL_PROCESS_ATTACH){
         DisableThreadLibraryCalls(hinstDLL);
-        HANDLE thread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Entry, hinstDLL, 0, 0);
+        HANDLE thread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)WinEntry, hinstDLL, 0, 0);
         if(thread) CloseHandle(thread);
     }
     return TRUE;
 }
+
+#endif

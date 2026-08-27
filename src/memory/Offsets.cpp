@@ -93,10 +93,5 @@ void Offsets::Init() {
     FindMembers("GameOptionsManager", GameOptionsManagerMembers);
     FindMembers("NormalGameOptionsV10", NormalGameOptionsV10Members, "AmongUs.GameOptions");
 
-    void* addr = WriterMembers["Write.String"].method_object;
-    MEMORY_BASIC_INFORMATION mbi;
-    VirtualQuery(addr, &mbi, sizeof(mbi));
-    printf("Permissions for Write.String:\nReg size: 0x%X, Protect: 0x%X, State: 0x%x\n", mbi.RegionSize, mbi.Protect, mbi.State);
-
     Initialized = true;
 }
