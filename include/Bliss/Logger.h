@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdarg>
 
 namespace Logger {

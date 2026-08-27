@@ -6,7 +6,7 @@
 #endif
 
 std::string format(const char* fmt, va_list args) {
-    va_list args, temp;
+    va_list temp;
     va_copy(temp, args);
     
     int size = std::vsnprintf(nullptr, 0, fmt, temp);
@@ -28,7 +28,7 @@ void Logger::Verbose(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_VERBOSE, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_VERBOSE, TAG, "%s", str.c_str());
     #else
         str = "[VERBOSE] " + str;
         puts(str.c_str());
@@ -44,7 +44,7 @@ void Logger::Debug(const char* fmt, ...)
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_DEBUG, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_DEBUG, TAG, "%s", str.c_str());
     #else
         str = "[DEBUG] " + str;
         puts(str.c_str());
@@ -59,7 +59,7 @@ void Logger::Info(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_INFO, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_INFO, TAG, "%s", str.c_str());
     #else
         str = "[INFO] " + str;
         puts(str.c_str());
@@ -74,7 +74,7 @@ void Logger::Warn(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_WARN, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_WARN, TAG, "%s", str.c_str());
     #else
         str = "[WARN] " + str;
         puts(str.c_str());
@@ -89,7 +89,7 @@ void Logger::Error(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_ERROR, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "%s", str.c_str());
     #else
         str = "[ERROR] " + str;
         puts(str.c_str());
@@ -104,7 +104,7 @@ void Logger::Fatal(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_FATAL, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_FATAL, TAG, "%s", str.c_str());
     #else
         str = "[FATAL] " + str;
         puts(str.c_str());
@@ -119,7 +119,7 @@ void Logger::Silent(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_SILENT, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_SILENT, TAG, "%s", str.c_str());
     #else
         str = "[SILENT] " + str;
         puts(str.c_str());
@@ -134,7 +134,7 @@ void Logger::Print(const char* fmt, ...) {
     va_end(args);
 
     #ifdef __ANDROID__
-        __android_log_print(ANDROID_LOG_UNKNOWN, TAG, str.c_str());
+        __android_log_print(ANDROID_LOG_UNKNOWN, TAG, "%s", str.c_str());
     #else
         puts(str.c_str());
     #endif
