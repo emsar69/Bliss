@@ -8,7 +8,13 @@
 #include <Bliss/il2cpp_Functions.h>
 #include <Bliss/UnityTypes.h>
 
-enum AnimType : byte {
+#if defined(__ANDROID__)
+    #include <time.h>
+#elif defined(__WIN32__)
+    #include <sysinfoapi.h>
+#endif
+
+enum AnimType : char {
     SHIELDS = 1,
     METEOR = 6,
     TRASH = 10 // 10 in mirahq 9 in the skeld. somehow both works in both map
@@ -36,8 +42,22 @@ class TickManager {
 public:
     static std::vector<TickTask> tasks;
 
+    static uint64_t GetTicks() {
+        uint64_t ret = 0;
+
+        #if defined(__ANDROID__)
+            timespec ts;
+            clock_gettime(CLOCK_MONOTONIC, &ts);
+            ret = static_cast<uint64_t>(ts.tv_sec)*1000 + ts.tv_nsec/1000000000;
+        #elif defined(__WIN32__)
+            ret = GetTickCount64();
+        #endif
+
+        return ret;
+    }
+
     static void AddTask(uint64_t interval, std::function<bool()> fn) {
-        uint64_t now = GetTickCount64();
+        uint64_t now = GetTicks();
         tasks.push_back({
             now + interval,
             interval,
@@ -46,7 +66,7 @@ public:
     }
 
     static void Tick() {
-        uint64_t now = GetTickCount64();
+        uint64_t now = GetTicks();
 
         for(auto it = tasks.begin(); it != tasks.end();) {
             if(!it->fn) {
