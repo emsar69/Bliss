@@ -30,7 +30,7 @@ void SoMain() {
     pthread_detach(thread);
 }
 
-#elif defined(__WIN32__)
+#elif defined(_WIN32)
     
 #include <Bliss/Devices.h>
 #include <windows.h>

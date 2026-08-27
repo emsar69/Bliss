@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__WIN32__)
+#if defined(_WIN32)
 
 #include <windows.h>
 #include <d3d11.h>

@@ -8,7 +8,7 @@ namespace Hooks {
     void Setup();
     void Destroy();
 
-	#ifdef __WIN32__
+	#ifdef _WIN32
 		#include <d3d11.h>
 
 		typedef HRESULT(__stdcall* PresentFn)(IDXGISwapChain*, UINT, UINT);

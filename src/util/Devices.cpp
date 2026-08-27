@@ -1,4 +1,4 @@
-#ifdef __WIN32__ //Disable completely if its not win32
+#ifdef _WIN32 //Disable completely if its not win32
 
 
 #include <Bliss/Devices.h>

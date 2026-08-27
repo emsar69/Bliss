@@ -5,7 +5,7 @@ namespace Gui {
     inline bool enabled = true;
 	inline bool setup = false;
 
-    #if defined(__WIN32__)
+    #if defined(_WIN32)
         #include <d3d11.h>
 
         inline HWND window = NULL;

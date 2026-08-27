@@ -10,7 +10,7 @@
 
 #if defined(__ANDROID__)
     #include <time.h>
-#elif defined(__WIN32__)
+#elif defined(_WIN32)
     #include <sysinfoapi.h>
 #endif
 
@@ -49,7 +49,7 @@ public:
             timespec ts;
             clock_gettime(CLOCK_MONOTONIC, &ts);
             ret = static_cast<uint64_t>(ts.tv_sec)*1000 + ts.tv_nsec/1000000000;
-        #elif defined(__WIN32__)
+        #elif defined(_WIN32)
             ret = GetTickCount64();
         #endif
 

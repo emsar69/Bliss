@@ -8,7 +8,7 @@
 
 #include <imgui/imgui.h>
 
-#ifdef __WIN32__
+#ifdef _WIN32
 	#include <intrin.h>
 	#include <imgui/backends/imgui_impl_win32.h>
 	#include <imgui/backends/imgui_impl_dx11.h>
@@ -19,7 +19,7 @@
 void Hooks::Setup() {
 	#if defined(__ANDROID__)
 		printf("hooks\n");
-	#elif defined(__WIN32__)
+	#elif defined(_WIN32)
 		if (MH_Initialize() != MH_OK)
 			throw std::runtime_error("MinHook initialization error");
 
@@ -58,7 +58,7 @@ void Hooks::Setup() {
 void Hooks::Destroy() {
 	#if defined(__ANDROID__)
 		printf("Destroyed hooks\n");
-	#elif defined(__WIN32__)
+	#elif defined(_WIN32)
 		MH_DisableHook(MH_ALL_HOOKS);
 		MH_RemoveHook(MH_ALL_HOOKS);
 		MH_Uninitialize();
@@ -68,7 +68,7 @@ void Hooks::Destroy() {
 	// il2cpp_Functions::il2cpp_thread_detach(Memory::il2cpp_thread);
 }
 
-#ifdef __WIN32__
+#ifdef _WIN32
 
 HRESULT __stdcall Hooks::PresentHook(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags) noexcept {
 	if (!Gui::setup) {

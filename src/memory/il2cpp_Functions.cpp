@@ -4,7 +4,7 @@
     #include <dlfcn.h>
     #define Resv(addr, n) \
         n = (n##_t)dlsym(addr, #n);
-#elif defined(__WIN32__)
+#elif defined(_WIN32)
     #include <windows.h>
     #define Resv(addr, n) \
         n = (n##_t)GetProcAddress(addr, #n);

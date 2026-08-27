@@ -13,7 +13,7 @@
 
 #define IM_COL32_FLOAT(f) IM_COL32(f[0]*255, f[1]*255, f[2]*255, f[3]*255)
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <imgui/backends/imgui_impl_win32.h>
 #include <imgui/backends/imgui_impl_dx11.h>
 #include <Bliss/Devices.h>
@@ -122,7 +122,7 @@ void SetupCommon() {
 	IO.LogFilename = NULL;
 }
 
-#if defined(__WIN32__)
+#if defined(_WIN32)
 
 void Gui::WinSetupMenu(ID3D11Device* device, ID3D11DeviceContext* context) {
 	SetupCommon();
@@ -288,7 +288,7 @@ void AndRenderEnd() {
 
 }
 
-#elif defined(__WIN32__)
+#elif defined(_WIN32)
 
 void WinRenderBegin() {
 	ImGui_ImplWin32_NewFrame();
@@ -306,7 +306,7 @@ void Gui::Render(){
 	if(!Offsets::Initialized) return;
     #if defined(__ANDROID__)
 		AndRenderBegin();
-	#elif defined(__WIN32__)
+	#elif defined(_WIN32)
 		WinRenderBegin();
 	#endif
 	ImGui::NewFrame();
@@ -502,12 +502,12 @@ void Gui::Render(){
 
 	#if defined(__ANDROID__)
 		AndRenderEnd();
-	#elif defined(__WIN32__)
+	#elif defined(_WIN32)
 		WinRenderEnd();
 	#endif
 }
 
-#ifdef __WIN32__
+#ifdef _WIN32
 LRESULT CALLBACK wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	if (GetAsyncKeyState(VK_DELETE) & 1)
 		Gui::open = !Gui::open;

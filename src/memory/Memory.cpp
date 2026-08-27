@@ -7,14 +7,14 @@
 
 #if defined(__ANDROID__)
     #include <dlfcn.h>
-#elif defined(__WIN32__)
+#elif defined(_WIN32)
     #include <libloaderapi.h>
 #endif
 
 void Memory::Init(){
     #if defined(__ANDROID__)
         Memory::GameAssembly = dlopen("libil2cpp.so", RTLD_NOW);
-    #elif defined(__WIN32__)
+    #elif defined(_WIN32)
         Memory::GameAssembly = GetModuleHandleA("GameAssembly.dll");
     #endif
 
