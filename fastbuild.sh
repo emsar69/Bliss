@@ -8,8 +8,9 @@ C=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-andro
 CXX=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++
 APK=build/apk
 KEY_PASS=123456
+ABI=arm64-v8a # 64bit=arm64-v8a | 32bit=armeabi-v7a
 
-cmake -B build -G Ninja -DCMAKE_C_COMPILER=${C} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_ANDROID_NDK=/opt/android-ndk -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a
+cmake -B build -G Ninja -DCMAKE_C_COMPILER=${C} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_ANDROID_NDK=/opt/android-ndk -DANDROID_ABI=${ABI}
 
 ninja -C build
 
