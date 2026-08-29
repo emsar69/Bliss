@@ -2,15 +2,13 @@ cmake_minimum_required(VERSION 3.18)
 
 if(CMAKE_CXX_COMPILER MATCHES "mingw32" OR CMAKE_C_COMPILER MATCHES "mingw32")
     set(CMAKE_SYSTEM_NAME Windows)
-    set(CMAKE_SYSTEM_PROCESSOR x86_64)
+    #set(CMAKE_SYSTEM_PROCESSOR x86_64)
 elseif(CMAKE_CXX_COMPILER MATCHES "android" OR CMAKE_C_COMPILER MATCHES "android")
-    set(CMAKE_SYSTEM_NAME Android)
-
     if(NOT CMAKE_ANDROID_NDK)
         message(STATUS "No CMAKE_ANDROID_NDK passed. Trying to find...")
 
         if(DEFINED ENV{ANDROID_NDK})
-            set(CMAKE_ANDROID_NDK ENV{ANDROID_NDK})
+            set(CMAKE_ANDROID_NDK $ENV{ANDROID_NDK})
         elseif(CMAKE_C_COMPILER MATCHES "(.*)/toolchains/llvm/prebuilt/[^/]+/bin/.*")
             set(CMAKE_ANDROID_NDK "${CMAKE_MATCH_1}")
         elseif(CMAKE_CXX_COMPILER MATCHES "(.*)/toolchains/llvm/prebuilt/[^/]+/bin/.*")
@@ -21,9 +19,13 @@ elseif(CMAKE_CXX_COMPILER MATCHES "android" OR CMAKE_C_COMPILER MATCHES "android
 
         message(STATUS "Found ANDROID_NDK at ${CMAKE_ANDROID_NDK}")
     endif()
+    message(STATUS "ndk = ${CMAKE_ANDROID_NDK}")
+    set(CMAKE_TOOLCHAIN_FILE ${CMAKE_ANDROID_NDK}/build/cmake/android.toolchain.cmake)
 endif()
 
-project(Bliss VERSION 0.1.0 LANGUAGES CXX)
+project(Bliss VERSION 0.1.0 LANGUAGES C CXX)
+
+message(STATUS "SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -73,7 +75,16 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
     # TODO: Hooking lib for android
     # NOT COMPLETE!
 
+    add_subdirectory(external/bhook/bytehook/src/main/cpp)
+    add_subdirectory(external/shadowhook/shadowhook/src/main/cpp)
+
     target_link_libraries(Bliss PRIVATE
         log
+        bytehook
     ) # TODO: Add libraries (will do)
+
+    target_include_directories(bytehook PRIVATE
+        ${CMAKE_SOURCE_DIR}/external/shadowhook/shadowhook/src/main/cpp/include
+        ${CMAKE_SOURCE_DIR}/external/bhook/bytehook/src/main/cpp/include
+    )
 endif()

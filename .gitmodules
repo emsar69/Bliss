@@ -1,0 +1,6 @@
+[submodule "external/bhook"]
+	path = external/bhook
+	url = https://github.com/bytedance/bhook.git
+[submodule "external/shadowhook"]
+	path = external/shadowhook
+	url = https://github.com/bytedance/android-inline-hook.git
