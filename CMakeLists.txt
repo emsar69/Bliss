@@ -83,7 +83,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
         bytehook
     ) # TODO: Add libraries (will do)
 
-    target_include_directories(bytehook PRIVATE
+    target_include_directories(bytehook PUBLIC
         ${CMAKE_SOURCE_DIR}/external/shadowhook/shadowhook/src/main/cpp/include
         ${CMAKE_SOURCE_DIR}/external/bhook/bytehook/src/main/cpp/include
     )
